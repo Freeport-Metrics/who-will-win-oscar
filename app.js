@@ -5,25 +5,29 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var r = require('rethinkdb');
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
 var app = express();
-
-
-
-var conn = r.connect({db: 'test'});
 
 var server = require('http').createServer(express);
 var io = require('socket.io')(server);
 
-io.on('connection', function(socket){
-  r.table('test').changes().run(conn, function(err, cursor) {
-    socket.emit('tweet', { hello: 'world' });
-    cursor.each(console.log);
+var conn = r.connect({db: 'test'});
+
+conn.then(function(conn){
+  io.on('connection', function(socket){
+    r.table('test').changes().run(conn, function(err, cursor) {
+      cursor.each(function(err, row) {
+        if (err){
+          throw err;
+        }
+        socket.emit('tweet', row);
+      }, function() {
+        // finished processing
+      });
+    });
   });
-});
-server.listen(app.get('port'));
+})
+
+server.listen(3001);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -35,14 +39,16 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Adding ORM models to bootstrapper
+require('./models/models')
+// Adding routes to bootstrapper
+require('./routes/routes')(app)
+// Adding dependencies to bootstrapper
+require('./config/dependencies')(app, express, path, __dirname)
 
 // External dependencies config
-app.use('/js',  express.static(__dirname + '/node_modules/angular/'));
-app.use('/js', express.static(__dirname + '/node_modules/socket.io-client/'));
 
-app.use('/', routes);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -74,6 +80,5 @@ app.use(function(err, req, res, next) {
     error: {}
   });
 });
-
 
 module.exports = app;

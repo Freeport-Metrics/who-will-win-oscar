@@ -10,8 +10,8 @@ Real time analytics trying to predict oscar winners
 
 3. Run
   - rethinkdb
-  - node app.js
-
+  - npm start -p 3000
+  
 4. Open
 
   - app: ???
