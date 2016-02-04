@@ -3,10 +3,12 @@
  */
 var r = require('rethinkdb');
 
+var DB_NAME = 'who_will_win_oscars'
+
 // Connecting to rethinkDB
-var conn = r.connect({db: 'test'});
+var conn = r.connect({db: DB_NAME});
 
 module.exports = {
   conn: conn,
-  r: r
+  r: r,
 };

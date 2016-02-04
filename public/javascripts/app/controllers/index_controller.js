@@ -6,7 +6,10 @@ angular.module('whoWillWinOscars.controllers')
         $scope
     ){
       $scope.socket = io.connect('http://localhost:3001');
+      $scope.tweets = [];
       $scope.socket.on('tweet', function (data) {
-        console.log(data);
+        $scope.$apply(function(){
+          $scope.tweets.push(JSON.stringify(data));
+        })
       });
     })

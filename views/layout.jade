@@ -1,5 +1,5 @@
 doctype html
-html(ng-app='whoWillWinOscars')
+html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
@@ -8,5 +8,5 @@ html(ng-app='whoWillWinOscars')
     script(src="javascripts/app.js")
     script(src="javascripts/app/controllers/controllers_wrapper.js")
     script(src="javascripts/app/controllers/index_controller.js")
-  body
+  body(ng-app='whoWillWinOscars')
     block content

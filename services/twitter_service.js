@@ -1,18 +1,13 @@
+var Tweet = require('../models/tweet');
 
-require('../models/tweet');
-
-
-
-module.exports = function(app,twitter){
+module.exports = function(twitter, models){
     //testing stream api
     twitter.stream('statuses/filter', {track: 'oscar'},  function(stream){
     stream.on('data', function(tweet) {
-        var tweetModel = new Tweet(tweet);
-        tweetModel.saveAll();
+        models.tweet.create(tweet);
     });
 
     stream.on('error', function(error) {
-            console.log(error);
         });
     });
 

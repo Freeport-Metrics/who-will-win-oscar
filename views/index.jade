@@ -1,6 +1,8 @@
 extends layout
-
 block content
   div(ng-controller="IndexController")
-    h1= 'Who Will Win Oscars'
-    p Welcome to who will win oscars
+    div
+      h1= 'Who Will Win Oscars'
+      p Welcome to who will win oscars
+    div(class='row')
+       div(class='col-xs-12' ng-repeat='tweet in tweets track by $index', ng-bind='tweet')

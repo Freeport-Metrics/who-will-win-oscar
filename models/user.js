@@ -3,12 +3,12 @@
  */
 module.exports = function(r, model){
 
-  const Tweet = model;
+  const User = model;
 
   return {
     create: function(params){
-      var tweet  = new Tweet(params)
-      return tweet.save();
+      var user  = new User(params)
+      return user.save();
     }
   }
 }

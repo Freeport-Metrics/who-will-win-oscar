@@ -5,6 +5,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var path = require('path');
+require('dotenv').config();
 
 module.exports = function(app, dir){
   // view engine setup
