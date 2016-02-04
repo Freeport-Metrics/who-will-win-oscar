@@ -8,7 +8,7 @@ module.exports = function(r, model){
   return {
     create: function(params){
       var tweet  = new Tweet(params)
-      return tweet.save();
+      return tweet.saveAll({user:true});
     }
   }
 }

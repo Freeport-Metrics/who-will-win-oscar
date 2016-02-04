@@ -3,7 +3,7 @@
  */
 var r = require('rethinkdb');
 
-var DB_NAME = 'who_will_win_oscars'
+var DB_NAME = 'who_will_win_oscars' // TODO EXPORT IT TO ENV VALUE
 
 // Connecting to rethinkDB
 var conn = r.connect({db: DB_NAME});
