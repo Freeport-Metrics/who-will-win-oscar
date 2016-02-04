@@ -22,18 +22,6 @@ require('./config/socket.io')
 // Adding Twitter API client
 var twitter = require('./config/twitter.js');
 
-//testing stream api
-twitter.stream('statuses/filter', {track: 'oscar'},  function(stream){
-  stream.on('data', function(tweet) {
-    console.log('<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>')
-    console.log(tweet);
-    console.log('<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>')
-  });
-
-  stream.on('error', function(error) {
-    console.log(error);
-  });
-});
-
+require('./services/twitter_service.js')(app,twitter);
 
 module.exports = app;
