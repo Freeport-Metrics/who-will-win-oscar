@@ -36,12 +36,11 @@ require('./routes/routes')(app)
 require('./config/dependencies')(app, express, __dirname)
 // Adding error handlers config to bootstrapper
 require('./config/error_handlers')(app)
-
 // Adding Twitter API client
-var twitter = require('./helpers/twitter-parser.js');
+var twitter = require('./config/twitter-parser.js');
 
 //testing stream api
-twitter.twitterClient.stream('statuses/filter', {track: 'oscar'},  function(stream){
+twitter.stream('statuses/filter', {track: 'oscar'},  function(stream){
   stream.on('data', function(tweet) {
     console.log('<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>')
     console.log(tweet);

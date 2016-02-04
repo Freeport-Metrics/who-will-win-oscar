@@ -7,6 +7,4 @@ var twitterClient = new Twitter({
   access_token_secret: process.env.ACCESS_TOKEN_SECRET
 });
 
-module.exports = {
-    twitterClient: twitterClient
-};
+module.exports = twitterClient;
