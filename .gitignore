@@ -3,5 +3,5 @@ rethinkdb_data
 bower_components
 .idea
 *.iml
-.env
+*.env
 npm-debug.log
