@@ -19,11 +19,8 @@ require('./config/error_handlers')(app)
 require('./config/db')
 // Adding socket.io to bootstrapper
 require('./config/socket.io')
-
-
-
 // Adding Twitter API client
-var twitter = require('./config/twitter-parser.js');
+var twitter = require('./config/twitter.js');
 
 //testing stream api
 twitter.stream('statuses/filter', {track: 'oscar'},  function(stream){
