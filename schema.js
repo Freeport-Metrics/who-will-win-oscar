@@ -12,7 +12,8 @@ var Tweet = thinky.createModel("Tweet", {
     source: String,
     title: String,
     content: String,
-    idAuthor: String
+    idAuthor: String,
+    movies: Array
 });
 
 var User = thinky.createModel('User', {

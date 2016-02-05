@@ -15,7 +15,7 @@ module.exports = function(twitter, models){
             }
         })
         models.tweet.create(tweet);
-        console.log(tweet)
+       // console.log(tweet)
     });
 
     stream.on('error', function(error) {
