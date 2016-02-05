@@ -7,9 +7,15 @@ angular.module('whoWillWinOscars.controllers')
     ){
       $scope.socket = io.connect('http://localhost:3001');
       $scope.tweets = [];
+      $scope.tweetCount = {
+        'Revenant': 10,
+        'Brooklyn': 15
+
+      }
       $scope.socket.on('tweet', function (data) {
         $scope.$apply(function(){
-          $scope.tweets.push(JSON.stringify(data));
+          console.log('['+data.new_val.movies + ']        ' +JSON.stringify(data.new_val.text));
+          $scope.tweets.push('['+data.new_val.movies + ']     ' + data.new_val.text);
         })
       });
     })
