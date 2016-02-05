@@ -4,50 +4,57 @@
 
 
 
-module.exports = function (db, io){
+module.exports = function (db, io) {
   var r = db.r;
 
-  function getTweetCount(){
-    return r.table('Tweet').concatMap(function(tweet){
-      return tweet('movies').map(function(title){return {title: title}});
+  function getTweetCount() {
+    return r.table('Tweet').concatMap(function (tweet) {
+      return tweet('movies').map(function (title) {
+        return {title: title}
+      });
     }).group(function (movie) {
       return movie('title');
     }).count();
   }
 
-  db.conn.then(function(conn){
-    io.on('connection', function(socket){
+  db.conn.then(function (conn) {
+    io.on('connection', function (socket) {
       db.r.table('Tweet').changes(
           {
             squash: true
           }
-      ).run(conn, function(err, cursor) {
-        cursor.each(function(err, row) {
-          if (err){
+      ).run(conn, function (err, cursor) {
+        cursor.each(function (err, row) {
+          if (err) {
             throw err;
           }
 
-          getTweetCount().run(conn,function (err, cursor) {
+          getTweetCount().run(conn, function (err, cursor) {
             if (err) throw err;
-            cursor.toArray(function (err, result) {
+            var result = {}
+            cursor.each(function (err, row) {
               if (err) throw err;
+              result[row['group']]=row['reduction'];
+            },function(){
               var json = JSON.stringify(result, null, 2);
-              // resulting json is an array with objects having two properties
-              //[{
-              //  "group": "Big Short",
-              //    "reduction": 39
-              //},
-              // {
-              // "group": "Big Short",
-              // "reduction": 39
-              // }]
+              // resulting json is an object with movie titles as keys and tweet counts as values e.g:
+              //{
+              //  "Big Short": 65,
+              //    "Bridge Of Spies": 18,
+              //    "Brooklyn": 709,
+              //    "Mad Max": 151,
+              //    "Martian": 167,
+              //    "Revenant": 436,
+              //    "Room": 12296,
+              //    "Spotlight": 935
+              //}
 
               socket.emit('tweet', json);
               console.log(json);
             });
           });
 
-        }, function() {
+        }, function () {
           // finished processing
         });
       });
