@@ -36,13 +36,13 @@ a {
   z-index: 1000;
 }
 
-.tweet{
-  width:300px;
-  height:50px;
-  background-color: rgba(51,51,51, 1);
-  border-radius: 4px;
-  transition: visibility 0s, opacity 0.5s linear;
-}
+/*.tweet{*/
+  /*width:300px;*/
+  /*height:50px;*/
+  /*background-color: rgba(51,51,51, 1);*/
+  /*border-radius: 4px;*/
+  /*transition: visibility 0s, opacity 0.5s linear;*/
+/*}*/
 
 /** CHART STYLES **/
 
@@ -63,7 +63,7 @@ a {
   stroke-width: 2px;
 }
 .c3-axis-x .tick {
-  display: none;
+  /*display: none;*/
 }
 .c3-axis-y2 .tick {
   display: none;
@@ -72,6 +72,22 @@ a {
 .legend{
   font-weight: bold;
 }
+
+/** EPOCH CHART STYLES **/
+
+.x.axis.bottom{
+  fill: whitesmoke;
+}
+.y.axis.right{
+  fill: whitesmoke;
+}
+.y.axis.left{
+  fill: whitesmoke;
+}
+.epoch .axis path, .epoch .axis line{
+  stroke: rgb(71,71,71) !important;
+}
+/** Specific styles **/
 
 .Revenant{
   color: #69788C;
@@ -134,4 +150,70 @@ a {
 
 .text-center{
   text-align: center;
+}
+
+.tweet-container{
+  min-height: 50px;
+  margin-bottom: 10px;
+}
+
+.tweet{
+  background-color: rgb(71,71,71);
+  padding: 10px;
+  display: inline-block;
+  border-radius: 4px;
+  color: whitesmoke;
+  border-style: solid;
+  border-width: 1px;
+}
+
+.tweet.Revenant{
+  border-color: #69788C;
+}
+
+.tweet.Martian{
+  border-color: #AA5A28;
+}
+
+.tweet.Bridge-Of-Spies{
+  border-color: #821E1E;
+}
+
+.tweet.Spotlight{
+  border-color: #DCDCDC;
+}
+
+.tweet.Mad-Max{
+  border-color: #E1BE32;
+}
+
+.tweet.Room{
+  border-color: #648CAA;
+}
+
+.tweet.Brooklyn{
+  border-color: #87A096;
+}
+
+.tweet.Big-Short{
+  border-color: #82643C;
+}
+
+
+.tweet.tweet-hide{
+  opacity: 0;
+  -webkit-transition: all .3s ease .15s;
+  -moz-transition: all .3s ease .15s;
+  -o-transition: all .3s ease .15s;
+  -ms-transition: all .3s ease .15s;
+  transition: all .3s ease .15s;
+}
+
+.tweet.tweet-show{
+  opacity: 1;
+  -webkit-transition: all .3s ease .15s;
+  -moz-transition: all .3s ease .15s;
+  -o-transition: all .3s ease .15s;
+  -ms-transition: all .3s ease .15s;
+  transition: all .3s ease .15s;
 }

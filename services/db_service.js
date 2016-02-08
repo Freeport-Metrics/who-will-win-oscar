@@ -38,8 +38,9 @@ module.exports = function (db, io) {
         //    "Room": 12296,
         //    "Spotlight": 935
         //}
+
         socket.emit('tweet_counters', rows);
-        socket.emit('tweet', result);
+        socket.emit('tweet_counters_obj', result);
       });
     });
   }
@@ -56,7 +57,7 @@ module.exports = function (db, io) {
           if (err) {
             throw err;
           }
-
+          socket.emit('tweet', row);
           getTweetCountAndSendEvents(conn, socket);
         }, function () {
           // finished processing

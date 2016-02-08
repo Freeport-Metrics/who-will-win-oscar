@@ -14,7 +14,6 @@ module.exports = function(twitter, models){
                 tweet.movies.push(value);
             }
         })
-       // console.log(tweet)
         if(tweet.movies.length == 0){
             return;
         }

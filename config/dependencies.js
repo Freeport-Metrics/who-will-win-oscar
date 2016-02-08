@@ -12,6 +12,9 @@ module.exports = function(app, dir){
   app.use('/js', express.static(dir + '/node_modules/socket.io-client/'));
   app.use('/js', express.static(dir + '/node_modules/c3/'));
   app.use('/js', express.static(dir + '/node_modules/d3/'));
+  app.use('/js', express.static(dir + '/node_modules/epoch-charting/dist/js/'));
+  app.use('/js', express.static(dir + '/node_modules/jquery/dist/'));
+  app.use('/css', express.static(dir + '/node_modules/epoch-charting/dist/css/'));
   app.use('/css', express.static(dir + '/node_modules/bootstrap/dist/css/'));
   app.use(express.static(path.join(dir, 'public')));
 }
