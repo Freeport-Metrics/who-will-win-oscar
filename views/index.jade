@@ -1,21 +1,23 @@
 extends layout
 block content
   div(ng-controller="IndexController")
-    div
-      h1= 'Who Will Win Oscars'
-      p Welcome to who will win oscars
+    div(class="text-center")
+      h1(class="color-white")= 'Who Will Win Oscars'
     div(class='row')
-       div(class='col-xs-12 mask-wrapper')
+        div(class='col-xs-3')
+            strong(class="color-white") According to Twitter Users
+            p(class="no-margin text-color") We measure Twitter buzz in real time
+            p(class="no-margin text-color") counting twits containing the movie
+            p(class="no-margin text-color") title keyword
+
+
+       div(class='col-xs-10 mask-wrapper')
         div(class='overlay-mask')
         div(class='tweet-mask')
         div(id="chart")
-       div(class='col-xs-12')
-           span(ng-bind="counters['Big Short']")
-           span(ng-bind="counters['Revenant']")
-           span(ng-bind="counters['Martian']")
-           span(ng-bind="counters['Bridge Of Spies']")
-           span(ng-bind="counters['Spotlight']")
-           span(ng-bind="counters['Mad Max']")
-           span(ng-bind="counters['Room']")
-           span(ng-bind="counters['Brooklyn']")
-           span(ng-bind="counters['Big Short']")
+       div(class='col-xs-2')
+        p(ng-repeat="counter in counters | orderBy:'-value'" class="legend {{applyClass(counter.name)}}" ng-class="{'highlight': applyHighlight($index)}")
+            span( ng-bind-template="{{counter.name}}: {{counter.value}}")
+            span( ng-if="applyHighlight($index)" class="highlight-text") winner
+
+

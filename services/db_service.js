@@ -17,8 +17,36 @@ module.exports = function (db, io) {
     }).count();
   }
 
+  function getTweetCountAndSendEvents(conn, socket){
+    getTweetCount().run(conn, function (err, cursor) {
+      if (err) throw err;
+      var result = {}
+      var rows = []
+      cursor.each(function (err, row) {
+        if (err) throw err;
+        rows.push({'name': row['group'], 'value': row['reduction']});
+        result[row['group']]=row['reduction'];
+      },function(){
+        // resulting json is an object with movie titles as keys and tweet counts as values e.g:
+        //{
+        //  "Big Short": 65,
+        //    "Bridge Of Spies": 18,
+        //    "Brooklyn": 709,
+        //    "Mad Max": 151,
+        //    "Martian": 167,
+        //    "Revenant": 436,
+        //    "Room": 12296,
+        //    "Spotlight": 935
+        //}
+        socket.emit('tweet_counters', rows);
+        socket.emit('tweet', result);
+      });
+    });
+  }
+
   db.conn.then(function (conn) {
     io.on('connection', function (socket) {
+      getTweetCountAndSendEvents(conn, socket);
       db.r.table('Tweet').changes(
           {
             squash: true
@@ -28,29 +56,8 @@ module.exports = function (db, io) {
           if (err) {
             throw err;
           }
-          getTweetCount().run(conn, function (err, cursor) {
-            if (err) throw err;
-            var result = {}
-            cursor.each(function (err, row) {
-              if (err) throw err;
-              result[row['group']]=row['reduction'];
-            },function(){
-              // resulting json is an object with movie titles as keys and tweet counts as values e.g:
-              //{
-              //  "Big Short": 65,
-              //    "Bridge Of Spies": 18,
-              //    "Brooklyn": 709,
-              //    "Mad Max": 151,
-              //    "Martian": 167,
-              //    "Revenant": 436,
-              //    "Room": 12296,
-              //    "Spotlight": 935
-              //}
-              socket.emit('tweet_counters', result);
-              socket.emit('tweet', result);
-            });
-          });
 
+          getTweetCountAndSendEvents(conn, socket);
         }, function () {
           // finished processing
         });

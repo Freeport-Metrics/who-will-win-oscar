@@ -9,7 +9,6 @@ module.exports = function(twitter, models){
     twitter.stream('statuses/filter', {track: movies.join(',')},  function(stream){
     stream.on('data', function(tweet) {
         tweet.movies = [];
-       // console.log(tweet)
         movies.forEach(function(value, index){
             if(tweet.text.toLowerCase().includes(value.toLowerCase())){
                 tweet.movies.push(value);

@@ -12,7 +12,7 @@ angular.module('whoWillWinOscars.controllers')
         'Brooklyn': 15
 
       }
-      $scope.counters = {};
+      $scope.counters = [];
       $scope.preparedData = {
         'Big Short': [],
         'Brooklyn': [],
@@ -23,6 +23,18 @@ angular.module('whoWillWinOscars.controllers')
         'Bridge Of Spies': [],
         'Martian': []
       }
+
+      $scope.applyClass = applyClass;
+      $scope.applyHighlight = applyHighlight;
+
+      function applyHighlight(index){
+        return index == 0
+      }
+
+      function applyClass(params){
+        return params.split(' ').join('-')
+      }
+
       var chart = c3.generate({
         bindto: '#chart',
         data: {
@@ -49,7 +61,7 @@ angular.module('whoWillWinOscars.controllers')
           show: false
         },
         legend: {
-          position: 'right'
+          show: false
         },
         axis:{
           x: {

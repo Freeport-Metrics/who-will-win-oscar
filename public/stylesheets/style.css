@@ -51,15 +51,15 @@ a {
 }
 
 .c3 .c3-axis-x path, .c3 .c3-axis-x line {
-  stroke: white;
+  stroke: rgb(71,71,71);;
   stroke-width: 2px;
 }
 .c3 .c3-axis-y path, .c3 .c3-axis-y line {
-  stroke: white;
+  stroke: rgb(71,71,71);
   stroke-width: 2px;
 }
 .c3 .c3-axis-y2 path, .c3 .c3-axis-y2 line {
-  stroke: white;
+  stroke: rgb(71,71,71);;
   stroke-width: 2px;
 }
 .c3-axis-x .tick {
@@ -67,4 +67,71 @@ a {
 }
 .c3-axis-y2 .tick {
   display: none;
+}
+
+.legend{
+  font-weight: bold;
+}
+
+.Revenant{
+  color: #69788C;
+}
+
+.Martian{
+  color: #AA5A28;
+}
+
+.Bridge-Of-Spies{
+  color: #821E1E;
+}
+
+.Spotlight{
+  color: #DCDCDC;
+}
+
+.Mad-Max{
+  color: #E1BE32;
+}
+
+.Room{
+  color: #648CAA;
+}
+
+.Brooklyn{
+  color: #87A096;
+}
+
+.Big-Short{
+  color: #82643C;
+}
+
+.block{
+  display: block;
+}
+
+.highlight{
+  background-color: rgb(71,71,71);
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.highlight-text{
+  color: rgb(50, 50, 50);
+  margin-left: 20px;
+}
+
+.text-color{
+  color: rgb(171,171,171)
+}
+
+.color-white{
+  color: whitesmoke;
+}
+
+.no-margin{
+  margin: 0;
+}
+
+.text-center{
+  text-align: center;
 }
