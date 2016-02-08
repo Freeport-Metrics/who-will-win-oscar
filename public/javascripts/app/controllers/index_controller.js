@@ -63,8 +63,6 @@ angular.module('whoWillWinOscars.controllers')
           }
         }
       });
-
-
       $scope.socket.on('tweet', function (data) {
           angular.forEach(data, function(value, key){
             $scope.$apply(function(){
