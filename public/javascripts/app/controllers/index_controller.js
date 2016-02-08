@@ -12,6 +12,7 @@ angular.module('whoWillWinOscars.controllers')
         'Brooklyn': 15
 
       }
+      $scope.counters = {};
       $scope.preparedData = {
         'Big Short': [],
         'Brooklyn': [],
@@ -63,9 +64,16 @@ angular.module('whoWillWinOscars.controllers')
           }
         }
       });
+
+      $scope.socket.on('tweet_counters', function(data){
+        $scope.$apply(function(){
+          $scope.counters = data;
+        });
+      });
+
       $scope.socket.on('tweet', function (data) {
+        $scope.$apply(function(){
           angular.forEach(data, function(value, key){
-            $scope.$apply(function(){
               if($scope.preparedData[key]){
                 if($scope.preparedData[key].length >= 10){
                   $scope.preparedData[key].shift();
@@ -73,8 +81,8 @@ angular.module('whoWillWinOscars.controllers')
                 }
                 $scope.preparedData[key].push(value);
               }
-            })
           })
+        })
         chart.load({
           json: $scope.preparedData
         });

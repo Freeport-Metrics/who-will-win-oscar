@@ -46,6 +46,7 @@ module.exports = function (db, io) {
               //    "Room": 12296,
               //    "Spotlight": 935
               //}
+              socket.emit('tweet_counters', result);
               socket.emit('tweet', result);
             });
           });
