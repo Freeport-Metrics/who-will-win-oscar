@@ -4,7 +4,9 @@
 var thinky = require('thinky')(
     {db:'who_will_win_oscars'} // Config
 );
+var errors = thinky.Errors;
 var r = thinky.r
+
 
 var Tweet = thinky.createModel("Tweet", {
     id: Number,
@@ -32,6 +34,7 @@ Tweet.belongsTo(User, 'user', 'userId', 'id');
 User.hasMany(Tweet, 'tweets', 'id', 'userId');
 
 module.exports = {
+    errors: errors,
     tweet: require('./models/Tweet')(r, Tweet),
     user: require('./models/User')(r, User)
 }

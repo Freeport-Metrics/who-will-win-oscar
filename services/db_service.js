@@ -28,7 +28,6 @@ module.exports = function (db, io) {
           if (err) {
             throw err;
           }
-
           getTweetCount().run(conn, function (err, cursor) {
             if (err) throw err;
             var result = {}
@@ -36,7 +35,6 @@ module.exports = function (db, io) {
               if (err) throw err;
               result[row['group']]=row['reduction'];
             },function(){
-              var json = JSON.stringify(result, null, 2);
               // resulting json is an object with movie titles as keys and tweet counts as values e.g:
               //{
               //  "Big Short": 65,
@@ -48,9 +46,7 @@ module.exports = function (db, io) {
               //    "Room": 12296,
               //    "Spotlight": 935
               //}
-
-              socket.emit('tweet', json);
-              console.log(json);
+              socket.emit('tweet', result);
             });
           });
 

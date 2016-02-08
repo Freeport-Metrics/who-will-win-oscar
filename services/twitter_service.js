@@ -9,18 +9,28 @@ module.exports = function(twitter, models){
     twitter.stream('statuses/filter', {track: movies.join(',')},  function(stream){
     stream.on('data', function(tweet) {
         tweet.movies = [];
+       // console.log(tweet)
         movies.forEach(function(value, index){
-            if(tweet.text.toLowerCase().indexOf(value.toLowerCase())>=0){
+            if(tweet.text.toLowerCase().includes(value.toLowerCase())){
                 tweet.movies.push(value);
             }
         })
-        models.tweet.create(tweet);
        // console.log(tweet)
-    });
+        if(tweet.movies.length == 0){
+            return;
+        }
+        var db_tweet = models.tweet.find(tweet.id).then(function(){
+            db_tweet.update(tweet);
+        }).catch(models.errors.DocumentNotFound, function(err) {
+            models.tweet.create(tweet).catch(function(err){
 
+            });
+        }).error(function(error) {
+            // Unexpected error
+        });
+    });
     stream.on('error', function(error) {
         console.log(error)
         });
     });
-
 };
