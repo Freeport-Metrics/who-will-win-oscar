@@ -46,6 +46,15 @@ module.exports = function (db, io) {
           return [movie('title'), movie('tweet_created_at').hours(), movie('tweet_created_at').minutes()];
         }).count();
   }
+  function getTweetCount() {
+    return r.table('Tweet').concatMap(function (tweet) {
+      return tweet('movies').map(function (title) {
+        return {title: title}
+      });
+    }).group(function (movie) {
+      return movie('title');
+    }).count();
+  }
 
   function getTweetCountAndSendEvents(conn, socket) {
     getTweetCountPerMinuteFrom(60).run(conn, function (err, cursor) {
@@ -73,9 +82,34 @@ module.exports = function (db, io) {
             }
 
             socket.emit('tweet_aggregated', aggregated_result);
-            socket.emit('tweet', result);
+            socket.emit('tweet_not_aggregated', result);
           });
 
+    });
+
+    getTweetCount().run(conn, function (err, cursor) {
+      if (err) throw err;
+      var result = {}
+      var rows = []
+      cursor.each(function (err, row) {
+        if (err) throw err;
+        rows.push({'name': row['group'], 'value': row['reduction']});
+        result[row['group']]=row['reduction'];
+      },function(){
+        // resulting json is an object with movie titles as keys and tweet counts as values e.g:
+        //{
+        //  "Big Short": 65,
+        //    "Bridge Of Spies": 18,
+        //    "Brooklyn": 709,
+        //    "Mad Max": 151,
+        //    "Martian": 167,
+        //    "Revenant": 436,
+        //    "Room": 12296,
+        //    "Spotlight": 935
+        //}
+
+        socket.emit('tweet_counters', rows);
+      });
     });
   }
 
