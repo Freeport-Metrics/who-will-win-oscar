@@ -13,6 +13,7 @@ angular.module('whoWillWinOscars.controllers')
       $scope.tweets = [];
       $scope.tweet = null;
       $scope.tweethide = false;
+      $scope.initialized = false;
       $scope.tweetCount = {}
       $scope.counters = [];
       $scope.preparedData = {
@@ -185,6 +186,7 @@ angular.module('whoWillWinOscars.controllers')
           if(!$scope.tweet){
             $scope.tweethide = false;
             $scope.tweet = data.new_val;
+            $scope.initialized = true;
             $timeout(function(){
               $scope.tweethide = true;
               $timeout(function(){

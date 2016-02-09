@@ -167,12 +167,13 @@ a {
 
 .tweet:before{
   position: absolute;
-  bottom: -4px;
+  bottom: -10px;
   display: inline-block;
   border-right: 7px solid transparent;
   border-top: 7px solid #eee;
   border-left: 7px solid transparent;
   border-top-color: rgb(71,71,71);
+  border-width: 10px;
   content: '';
 }
 
