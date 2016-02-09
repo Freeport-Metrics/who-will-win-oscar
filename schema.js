@@ -15,7 +15,8 @@ var Tweet = thinky.createModel("Tweet", {
     title: String,
     content: String,
     idAuthor: String,
-    movies: Array
+    movies: Array,
+    created_at: Date
 });
 
 var User = thinky.createModel('User', {
@@ -28,8 +29,9 @@ var User = thinky.createModel('User', {
     created_at: String,
     lang: String,
     profile_image_url: String,
-})
+});
 
+Tweet.ensureIndex('created_at');
 Tweet.belongsTo(User, 'user', 'userId', 'id');
 User.hasMany(Tweet, 'tweets', 'id', 'userId');
 
@@ -37,4 +39,4 @@ module.exports = {
     errors: errors,
     tweet: require('./models/Tweet')(r, Tweet),
     user: require('./models/User')(r, User)
-}
+};
