@@ -62,6 +62,11 @@ a {
   stroke: rgb(71,71,71);;
   stroke-width: 2px;
 }
+
+.c3 .tick tspan{
+  fill: white;
+}
+
 .c3-axis-x .tick {
   /*display: none;*/
 }

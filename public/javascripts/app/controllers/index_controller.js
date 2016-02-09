@@ -16,7 +16,7 @@ angular.module('whoWillWinOscars.controllers')
       $scope.initialized = false;
       $scope.tweetCount = {}
       $scope.counters = [];
-      $scope.preparedData = {
+      $scope.preparedAggregatedData = {
         'Big Short': [],
         'Brooklyn': [],
         'Room': [],
@@ -27,6 +27,7 @@ angular.module('whoWillWinOscars.controllers')
         'Martian': [],
         'time': [0,0,0,0,0,0,0,0]
       }
+      $scope.preparedNotAggregatedData = angular.copy($scope.preparedAggregatedData);
 
       $scope.applyClass = applyClass;
       $scope.applyHighlight = applyHighlight;
@@ -39,11 +40,12 @@ angular.module('whoWillWinOscars.controllers')
         return params.split(' ').join('-')
       }
 
-      var chart = c3.generate({
-        bindto: '#chart',
+      var chartConfig = {
+        bindto: '#aggregated_chart',
         data: {
           x: 'time',
-          json: $scope.preparedData,
+          xFormat: '%H:%M',
+          json: $scope.preparedAggregatedData,
           type: 'spline',
           colors: {
             'Revenant': '69788C',
@@ -72,11 +74,8 @@ angular.module('whoWillWinOscars.controllers')
           x: {
             type: 'timeseries',
             tick: {
-              format: function(d){
-                return d;
-              }
+              format: '%H:%M'
             }
-            //categories: ['Revenant','Martian','Bridge Of Spies','Spotlight','Mad Max','Room','Brooklyn','Big Short']
           },
           y: {
             show:false
@@ -85,87 +84,13 @@ angular.module('whoWillWinOscars.controllers')
             show: true
           }
         }
-      });
+      }
 
-      var data = [
-        // First series
-        {
-          label: "Revenant",
-          values: [ {time: 1370044800, y: 100}, {time: 1370044801, y: 1000} ],
-          range: 'range-l'
-        },
+      var aggregatedChart = c3.generate(chartConfig);
 
-        // The second series
-        {
-          label: "Martian",
-          values: [ {time: 1370044800, y: 78}, {time: 1370044801, y: 98}],
-          range: 'range-r'
-        },
-        {
-          label: "Bridge Of Spies",
-          values: [ {time: 1370044800, y: 78}, {time: 1370044801, y: 98}],
-          range: 'range-r'
-        },
-        {
-          label: "Spotlight",
-          values: [ {time: 1370044800, y: 78}, {time: 1370044801, y: 98}],
-          range: 'range-r'
-        },
-        {
-          label: "Mad Max",
-          values: [ {time: 1370044800, y: 78}, {time: 1370044801, y: 98}],
-          range: 'range-r'
-        },
-        {
-          label: "Room",
-          values: [ {time: 1370044800, y: 78}, {time: 1370044801, y: 98}],
-          range: 'range-r'
-        },
-        {
-          label: "Brooklyn",
-          values: [ {time: 1370044800, y: 78}, {time: 1370044801, y: 98}],
-          range: 'range-r'
-        },
-        {
-          label: "Big Short",
-          values: [ {time: 1370044800, y: 78}, {time: 1370044801, y: 98}],
-          range: 'range-r'
-        },
-      ];
-
-
-      var epochChart = $("#epoch-chart").epoch({
-        type: 'time.line',
-        data: data,
-        axes: ['left', 'right', 'bottom'],
-        range: {
-          left: 'range-l',
-          right: 'range-r'
-        },
-      });
-
-
-      $interval(function(){
-        epochChart.push([
-          {time: new Date().getTime(), y: Math.random() * 100}, // Revenant
-          {time: new Date().getTime(), y: Math.random() * 100}, // Martian
-          {time: new Date().getTime(), y: Math.random() * 100}, // Bridge Of Spies
-          {time: new Date().getTime(), y: Math.random() * 100}, // Spotlight
-          {time: new Date().getTime(), y: Math.random() * 100}, // Mad Max
-          {time: new Date().getTime(), y: Math.random() * 100}, // Room
-          {time: new Date().getTime(), y: Math.random() * 100}, // Brooklyn
-          {time: new Date().getTime(), y: Math.random() * 100}, // Big Short
-        ]);
-
-        $scope.preparedData['time'].push(new Date())
-        if($scope.preparedData['time'].length > 9){
-          $scope.preparedData['time'].shift();
-        }
-
-        chart.load({
-              json:$scope.preparedData
-            })
-      }, 1000)
+      chartConfig['bindto'] = '#not_aggregated_chart';
+      chartConfig['data']['json'] = $scope.preparedNotAggregatedData;
+      var nonAggregatedChart = c3.generate(chartConfig);
 
       $scope.socket.on("connect", function(socket){
         console.log("client connected to server");
@@ -197,19 +122,40 @@ angular.module('whoWillWinOscars.controllers')
         });
       });
 
-      $scope.socket.on('tweet_counters_obj', function (data) {
-        $scope.$apply(function(){
-          angular.forEach(data, function(value, key){
-              if($scope.preparedData[key]){
-                $scope.preparedData[key].push(value);
-                if($scope.preparedData[key].length > 9){
-                  $scope.preparedData[key].shift();
-                }
-              }
+      $scope.socket.on('tweet_aggregated', function(data){
+        angular.forEach(data, function(value,key){
+          $scope.preparedAggregatedData['time'].push(key);
+          if($scope.preparedAggregatedData['time'].length > 59){
+            $scope.preparedAggregatedData['time'].shift();
+          }
+
+          angular.forEach(data[key], function(value,key){
+            $scope.preparedAggregatedData[key].push(value);
+            if($scope.preparedAggregatedData[key].length > 59){
+              $scope.preparedAggregatedData[key].shift();
+            }
           })
         })
-        //chart.load({
-        //  json: $scope.preparedData
-        //});
-      });
+        aggregatedChart.load({
+          json: $scope.preparedAggregatedData
+        });
+      })
+
+      $scope.socket.on('tweet_not_aggregated', function(data){
+        angular.forEach(data, function(value,key){
+          $scope.preparedNotAggregatedData['time'].push(key);
+          if($scope.preparedNotAggregatedData['time'].length > 59){
+            $scope.preparedNotAggregatedData['time'].shift();
+          }
+          angular.forEach(data[key], function(value,key){
+            $scope.preparedNotAggregatedData[key].push(value);
+            if($scope.preparedNotAggregatedData[key].length > 59){
+              $scope.preparedNotAggregatedData[key].shift();
+            }
+          })
+        })
+        nonAggregatedChart.load({
+          json: $scope.preparedNotAggregatedData
+        });
+      })
     })

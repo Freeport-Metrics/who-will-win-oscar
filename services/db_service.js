@@ -57,36 +57,6 @@ module.exports = function (db, io) {
   }
 
   function getTweetCountAndSendEvents(conn, socket) {
-    getTweetCountPerMinuteFrom(60).run(conn, function (err, cursor) {
-      if (err) throw err;
-      var aggregated_result = initialResult();
-      var result = initialResult();
-      var rows = [];
-      cursor.each(
-          function (err, row) {
-            if (err) throw err;
-            var title = row['group'].splice(0,1)[0];
-            var hour = row['group'].join(':');
-            result[hour][title] =  row.reduction;
-            rows.push({hour: row['group'][0],minute: row['group'][1], time: hour, title: title, count: row.reduction});
-          }, function () {
-
-            rows.sort(function(a,b){
-              return (a.hour - b.hour)*60 + a.minute - b.minute;
-            });
-            for(var i = 0; i < rows.length; i++){
-              aggregated_result[rows[i].time][rows[i].title] += rows[i].count;
-              for(var j = i+1; j < rows.length;j++){
-                aggregated_result[rows[j].time][rows[i].title] += rows[i].count;
-              }
-            }
-
-            socket.emit('tweet_aggregated', aggregated_result);
-            socket.emit('tweet_not_aggregated', result);
-          });
-
-    });
-
     getTweetCount().run(conn, function (err, cursor) {
       if (err) throw err;
       var result = {}
@@ -98,7 +68,7 @@ module.exports = function (db, io) {
       },function(){
         // resulting json is an object with movie titles as keys and tweet counts as values e.g:
         //{
-        //  "Big Short": 65,
+        //    "Big Short": 65,
         //    "Bridge Of Spies": 18,
         //    "Brooklyn": 709,
         //    "Mad Max": 151,
@@ -115,6 +85,41 @@ module.exports = function (db, io) {
 
   db.conn.then(function (conn) {
     io.on('connection', function (socket) {
+      setInterval(function () {
+        getTweetCountPerMinuteFrom(30).run(conn, function (err, cursor) {
+          if (err) throw err;
+          var aggregated_result = initialResult();
+          var result = initialResult();
+          var rows = [];
+          cursor.each(
+              function (err, row) {
+                if (err) throw err;
+                var title = row['group'].splice(0,1)[0];
+                var hour = row['group'].join(':');
+
+                if(!result[hour]){
+                  return;
+                }
+                result[hour][title] = row.reduction;
+                rows.push({hour: row['group'][0],minute: row['group'][1], time: hour, title: title, count: row.reduction});
+              }, function () {
+
+                rows.sort(function(a,b){
+                  return (a.hour - b.hour)*60 + a.minute - b.minute;
+                });
+                for(var i = 0; i < rows.length; i++){
+                  aggregated_result[rows[i].time][rows[i].title] += rows[i].count;
+                  for(var j = i+1; j < rows.length;j++){
+                    aggregated_result[rows[j].time][rows[i].title] += rows[i].count;
+                  }
+                }
+
+                socket.emit('tweet_aggregated', aggregated_result);
+                socket.emit('tweet_not_aggregated', result);
+              });
+
+        });
+      }, 1000)
       getTweetCountAndSendEvents(conn, socket);
       db.r.table('Tweet').changes(
           {
