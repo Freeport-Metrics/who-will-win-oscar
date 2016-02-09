@@ -16,6 +16,7 @@
     "dotenv": "^2.0.0",
     "epoch-charting": "^0.8.4",
     "express": "~4.13.1",
+    "font-awesome": "^4.5.0",
     "jade": "~1.11.0",
     "jquery": "^2.2.0",
     "morgan": "~1.6.1",

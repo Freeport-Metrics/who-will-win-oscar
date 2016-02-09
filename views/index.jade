@@ -10,14 +10,14 @@ block content
             p(class="no-margin text-color") counting twits containing the movie
             p(class="no-margin text-color") title keyword
         div(class='col-xs-12 text-center tweet-container')
-            div(class="tweet {{tweet.movies[0]}}" ng-class="{'tweet-hide': tweethide, 'tweet-show': !tweethide}")
+            div(class="tweet " ng-class="{'tweet-hide': tweethide, 'tweet-show': !tweethide}")
+                i(class="fa fa-twitter {{tweet.movies[0]}} fa-3x pull-left")
                 p(ng-bind="tweet.text")
        div(class='col-xs-10 mask-wrapper')
         div(class='overlay-mask')
         div(class='tweet-mask')
         div(id="chart")
         div(id="epoch-chart" class="epoch category4" style="height: 200px;" )
-
        div(class='col-xs-2')
         p(ng-repeat="counter in counters | orderBy:'-value'" class="legend {{applyClass(counter.name)}}" ng-class="{'highlight': applyHighlight($index)}")
             span( ng-bind-template="{{counter.name}}: {{counter.value}}")

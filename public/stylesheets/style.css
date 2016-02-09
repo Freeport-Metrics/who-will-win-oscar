@@ -163,8 +163,17 @@ a {
   display: inline-block;
   border-radius: 4px;
   color: whitesmoke;
-  border-style: solid;
-  border-width: 1px;
+}
+
+.tweet:before{
+  position: absolute;
+  bottom: -4px;
+  display: inline-block;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #eee;
+  border-left: 7px solid transparent;
+  border-top-color: rgb(71,71,71);
+  content: '';
 }
 
 .tweet.Revenant{
