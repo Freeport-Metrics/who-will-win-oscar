@@ -1,7 +1,14 @@
 body {
-  background-color: rgb(51,51,51);
+  background-color: rgb(36, 36, 36);
   padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font: 16px Helvetica, "Lucida Grande", Arial, sans-serif;
+  line-height: 1.5;
+}
+
+h1{
+  font-size: 800%;
+  margin-top: 30px;
+  font-family: "Josefin Sans";
 }
 
 a {
@@ -231,4 +238,98 @@ a {
   -o-transition: all .3s ease .15s;
   -ms-transition: all .3s ease .15s;
   transition: all .3s ease .15s;
+}
+
+h1.gold{
+  background: #f3e2c7 ; /* Old browsers */
+  background: -moz-linear-gradient(-45deg, #f3e2c7  0%, #c19e67  50%, #b68d4c  51%, #e9d4b3  100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-45deg, #f3e2c7  0%,#c19e67  50%,#b68d4c  51%,#e9d4b3  100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(135deg, #f3e2c7  0%,#c19e67  50%,#b68d4c  51%,#e9d4b3  100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3e2c7 ', endColorstr='#e9d4b3 ',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+.laurel{
+  width: 200px;
+  height: 200px;
+}
+
+.laurel-wrapper{
+  width: 400px;
+  height: 200px;
+  display: inline-block;
+  position: relative;
+}
+
+.laurel-wrapper.Revenant svg{
+  fill: #69788C;
+}
+
+.laurel-wrapper.Martian svg{
+  fill: #AA5A28;
+}
+
+.laurel-wrapper.Bridge-Of-Spies svg{
+  fill: #821E1E;
+}
+
+.laurel-wrapper.Spotlight svg{
+  fill: #DCDCDC;
+}
+
+.laurel-wrapper.Mad-Max svg{
+  fill: #E1BE32;
+}
+
+svg{
+  fill: #648CAA;
+}
+
+.laurel-wrapper.Brooklyn svg{
+  fill: #87A096;
+}
+
+.laurel-wrapper.Big-Short svg{
+  fill: #82643C;
+}
+
+.laurel-text{
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  bottom: 25%;
+  font-size: 150%;
+}
+.laurel-text-counter{
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  bottom: 50%;
+  font-size: 400%
+}
+
+
+.m-t-xl{
+  margin-top: 35px;
+}
+
+.m-t-lg{
+  margin-top: 30px;
+}
+
+.m-t-md{
+  margin-top: 25px;
+}
+
+.m-t-sm{
+  margin-top: 20px;
+}
+
+.m-t-xs{
+  margin-top: 15px;
 }

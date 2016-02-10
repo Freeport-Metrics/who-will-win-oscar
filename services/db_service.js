@@ -75,7 +75,7 @@ module.exports = function (db, io) {
     return r.table('Tweet')
         .orderBy({index: 'created_at'})
         .filter(function (tweet) {
-          return r.now().sub(tweet('created_at')).le(seconds);
+          return r.now().sub(tweet('created_at')).lt(seconds);
         })
         .concatMap(function (tweet) {
           return tweet('movies').map(function (title) {
