@@ -1,31 +1,69 @@
 /**
  * Created by Matuszewski on 04/02/16.
  */
-
+var extend = require('util')._extend;
 
 
 module.exports = function (db, io) {
   var r = db.r;
   var movies = ['Revenant', 'Mad Max', 'Martian', 'Brooklyn', 'Room', 'Spotlight', 'Bridge Of Spies', 'Big Short'];
+  var lastUpdate = {
+    h: 0,
+    m: 0,
+    time: '00:00'
+  };
 
-  var initialResult = function (){
+  var toTime = function(h,m){
+    return ('0'+h).slice(-2) + ':' + ('0'+m).slice(-2)
+  };
+
+  var initialResult = function (minutesAgo,initialValues) {
     var minutes = {};
+    if(!minutesAgo){
+      minutesAgo = 60;
+    }
     var now = new Date();
     var h = now.getUTCHours();
     var m = now.getUTCMinutes();
 
-    for(var i = 60; i > 0; i-- ){
-      minutes[h+':'+(m<10 ? '0' : '')+m--] = movies.reduce(function(obj,val){
+    for (var i = minutesAgo; i > 0; i--) {
+      minutes[toTime(h,m--)] = initialValues ? initialValues : movies.reduce(function (obj, val) {
         obj[val] = 0;
         return obj;
-      },{});
-      if( m < 0 ){
+      }, {});
+      if (m < 0) {
         m = 59;
         h--;
       }
     }
     return minutes;
   };
+
+  var cached_aggregated = null;
+  var cached_temp = null;
+
+
+  function updateCache(row, cache){
+    var time = toTime(row.hour,row.minute);
+    if(!cache[time]){
+      var initial = cache[lastUpdate.time];
+      var now = new Date();
+      now = {
+        h: now.getUTCHours(),
+        m: now.getUTCMinutes()
+      };
+      now.time = toTime(now.h,now.m);
+      var minutesAgo = 60*(now.h - lastUpdate.h) + (now.min - lastUpdate.m);
+      var new_vals = initialResult(minutesAgo, initial);
+      extend(cache,new_vals);
+    }
+    row.movies.forEach(function(title){
+      cache[time][title] += 1;
+    });
+
+    return cache[time];
+  }
+
 
   function getTweetCountPerMinuteFrom(minutes) {
     var seconds = minutes * 60;
@@ -46,100 +84,92 @@ module.exports = function (db, io) {
           return [movie('title'), movie('tweet_created_at').hours(), movie('tweet_created_at').minutes()];
         }).count();
   }
-  function getTweetCount() {
-    return r.table('Tweet').concatMap(function (tweet) {
-      return tweet('movies').map(function (title) {
-        return {title: title}
-      });
-    }).group(function (movie) {
-      return movie('title');
-    }).count();
-  }
 
-  function getTweetCountAndSendEvents(conn, socket) {
-    getTweetCount().run(conn, function (err, cursor) {
-      if (err) throw err;
-      var result = {}
-      var rows = []
-      cursor.each(function (err, row) {
-        if (err) throw err;
-        rows.push({'name': row['group'], 'value': row['reduction']});
-        result[row['group']]=row['reduction'];
-      },function(){
-        // resulting json is an object with movie titles as keys and tweet counts as values e.g:
-        //{
-        //    "Big Short": 65,
-        //    "Bridge Of Spies": 18,
-        //    "Brooklyn": 709,
-        //    "Mad Max": 151,
-        //    "Martian": 167,
-        //    "Revenant": 436,
-        //    "Room": 12296,
-        //    "Spotlight": 935
-        //}
-
-        socket.emit('tweet_counters', rows);
-      });
-    });
-  }
-
-  function initialize(conn, socket){
+  function initialize(conn, callback) {
     getTweetCountPerMinuteFrom(60).run(conn, function (err, cursor) {
       if (err) throw err;
       var aggregated_result = initialResult();
       var result = initialResult();
-      var rows = [];
       cursor.each(
           function (err, row) {
             if (err) throw err;
-            var title = row['group'].splice(0,1)[0];
+            var title = row['group'].splice(0, 1)[0];
             var h = row['group'][0];
             var m = row['group'][1];
-            var time = h+':'+(m<10 ? '0' : '')+m;
+            var time = toTime(h,m);
 
-            if(!result[time]){
+            if (!result[time]) {
               return;
             }
             result[time][title] = row.reduction;
-            Object.keys(aggregated_result).forEach(function(key) {
-              if(key > time) {
+            Object.keys(aggregated_result).forEach(function (key) {
+              if (key > time) {
                 aggregated_result[key][title] += row.reduction;
 
               }
             });
+
           }, function () {
-
-
-            socket.emit('initialize_tweet_aggregated', aggregated_result);
-            socket.emit('initialize_tweet_not_aggregated', result);
+            cached_aggregated = aggregated_result;
+            cached_temp = result;
+            if(callback) {
+              callback();
+            }
           });
-
     });
   }
 
-  db.conn.then(function (conn) {
-    io.on('connection', function (socket) {
-      initialize(conn, socket);
-      getTweetCountAndSendEvents(conn, socket);
-      db.r.table('Tweet').changes(
-          {
-            squash: 5
-          }
-      ).run(conn, function (err, cursor) {
-        cursor.each(function (err, row) {
-          if (err) {
-            throw err;
-          }
-          socket.emit('tweet', row);
-          //getTweetCountAndSendEvents(conn, socket);
-        }, function () {
-          // finished processing
-        });
-      });
-      socket.on('disconnect', function(socket){
+  function sendCache(socket){
+    socket.emit('initialize_tweet_aggregated', cached_aggregated);
+    socket.emit('initialize_tweet_not_aggregated', cached_temp);
+  }
 
-      })
+  db.conn.then(function (conn) {
+
+    initialize(conn, function(){
+      io.on('connection', function (socket) {
+        sendCache(socket);
+        db.r.table('Tweet').changes(
+            {
+              squash: true
+            }
+        ).map(function(row){
+          return {
+            hour: row('new_val')('created_at').hours(),
+            minute: row('new_val')('created_at').minutes(),
+            date: row('new_val')('created_at'),
+            text: row('new_val')('text'),
+            is_new: row('old_val').eq(null),
+            movies: row('new_val')('movies')
+          };
+        }).run(conn, function (err, cursor) {
+          cursor.each(function (err, row)  {
+            if (err) {
+              throw err;
+            }
+
+
+            if(!row.is_new){
+              return;
+            }
+            var lastValueAgg = updateCache(row,cached_aggregated);
+            var lastValue = updateCache(row,cached_temp);
+
+            console.log(lastValueAgg);
+            console.log('<<<<<<<>>>>>>>');
+            socket.emit('new_tweets_aggregates',lastValueAgg);
+            socket.emit('new_tweets',lastValue);
+            socket.emit('tweet', row);
+          }, function () {
+            // finished processing
+          });
+        });
+        socket.on('disconnect', function (socket) {
+
+        })
+      });
     });
+
 
   })
 }
