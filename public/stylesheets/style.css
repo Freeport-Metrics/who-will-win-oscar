@@ -70,7 +70,7 @@ a {
 .c3-axis-x .tick {
   /*display: none;*/
 }
-.c3-axis-y2 .tick {
+#aggregated_chart .c3-axis-y2 .tick {
   display: none;
 }
 

@@ -11,6 +11,7 @@ angular.module('whoWillWinOscars.controllers')
         'force new connection':true
       });
       $scope.tweets = [];
+      $scope.newVal = null;
       $scope.tweet = null;
       $scope.tweethide = false;
       $scope.initialized = false;
@@ -92,6 +93,44 @@ angular.module('whoWillWinOscars.controllers')
       chartConfig['data']['json'] = $scope.preparedNotAggregatedData;
       var nonAggregatedChart = c3.generate(chartConfig);
 
+      $interval(function(){
+        var date = new Date();
+        var current_time =  d3.time.format("%H:%M")(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()));
+        var time = $.inArray(current_time, $scope.preparedAggregatedData['time'])
+        if(!time){
+          $scope.preparedAggregatedData['time'].push(current_time);
+          $scope.preparedAggregatedData['time'].shift();
+          angular.forEach($scope.preparedAggregatedData, function(value, key){
+            value.shift();
+            value.push(value[value.length-1]);
+          });
+          aggregatedChart.load({
+            json: $scope.preparedAggregatedData
+          });
+        }
+        if($scope.newVal){
+          var index = null;
+          var counter_collection = null;
+          angular.forEach($scope.newVal, function(newValue, key){
+            angular.forEach($scope.preparedAggregatedData['time'], function(value, i){
+              if(key == value){
+                index = i;
+              }
+            })
+            counter_collection = newValue;
+          })
+          if(index != null){
+            angular.forEach(counter_collection, function(val, key){
+              $scope.preparedAggregatedData[key][index] = val;
+            })
+          }
+          aggregatedChart.load({
+            json: $scope.preparedAggregatedData
+          });
+          $scope.newVal = null;
+        }
+      }, 1000)
+
       $scope.socket.on("connect", function(socket){
         console.log("client connected to server");
       });
@@ -122,7 +161,7 @@ angular.module('whoWillWinOscars.controllers')
         });
       });
 
-      $scope.socket.on('tweet_aggregated', function(data){
+      $scope.socket.on('initialize_tweet_aggregated', function(data){
         angular.forEach(data, function(value,key){
           $scope.preparedAggregatedData['time'].push(key);
           if($scope.preparedAggregatedData['time'].length > 59){
@@ -141,7 +180,7 @@ angular.module('whoWillWinOscars.controllers')
         });
       })
 
-      $scope.socket.on('tweet_not_aggregated', function(data){
+      $scope.socket.on('initialize_tweet_not_aggregated', function(data){
         angular.forEach(data, function(value,key){
           $scope.preparedNotAggregatedData['time'].push(key);
           if($scope.preparedNotAggregatedData['time'].length > 59){
