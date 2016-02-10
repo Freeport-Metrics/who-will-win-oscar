@@ -17,6 +17,15 @@ module.exports = function (db, io) {
     return ('0'+h).slice(-2) + ':' + ('0'+m).slice(-2)
   };
 
+  var currentTime = function() {
+    var now = new Date();
+    return {
+      h: now.getUTCHours(),
+      m: now.getUTCMinutes(),
+      time: toTime(now.getUTCHours(),now.getUTCMinutes())
+    };
+  };
+
   var initialResult = function (minutesAgo,initialValues) {
     var minutes = {};
     if(!minutesAgo){
@@ -47,12 +56,7 @@ module.exports = function (db, io) {
     var time = toTime(row.hour,row.minute);
     if(!cache[time]){
       var initial = cache[lastUpdate.time];
-      var now = new Date();
-      now = {
-        h: now.getUTCHours(),
-        m: now.getUTCMinutes()
-      };
-      now.time = toTime(now.h,now.m);
+      var now = currentTime();
       var minutesAgo = 60*(now.h - lastUpdate.h) + (now.min - lastUpdate.m);
       var new_vals = initialResult(minutesAgo, initial);
       extend(cache,new_vals);
@@ -60,6 +64,7 @@ module.exports = function (db, io) {
     row.movies.forEach(function(title){
       cache[time][title] += 1;
     });
+    lastUpdate = now;
 
     return cache[time];
   }
@@ -112,6 +117,7 @@ module.exports = function (db, io) {
           }, function () {
             cached_aggregated = aggregated_result;
             cached_temp = result;
+            lastUpdate = currentTime();
             if(callback) {
               callback();
             }

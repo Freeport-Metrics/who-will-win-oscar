@@ -150,7 +150,7 @@ angular.module('whoWillWinOscars.controllers')
         $scope.$apply(function(){
           if(!$scope.tweet){
             $scope.tweethide = false;
-            $scope.tweet = data.new_val;
+            $scope.tweet = data;
             $scope.tweet.text = $scope.tweet.text.replace(new RegExp($scope.tweet.movies[0], "ig"),
                 '<span class="'+$scope.tweet.movies[0]+'">'+$scope.tweet.movies[0]+'</span>')
             $scope.initialized = true;
