@@ -93,24 +93,22 @@ module.exports = function (db, io) {
           function (err, row) {
             if (err) throw err;
             var title = row['group'].splice(0,1)[0];
-            var hour = row['group'].join(':');
+            var h = row['group'][0];
+            var m = row['group'][1];
+            var time = h+':'+(m<10 ? '0' : '')+m;
 
-            if(!result[hour]){
+            if(!result[time]){
               return;
             }
-            result[hour][title] = row.reduction;
-            rows.push({hour: row['group'][0],minute: row['group'][1], time: hour, title: title, count: row.reduction});
+            result[time][title] = row.reduction;
+            Object.keys(aggregated_result).forEach(function(key) {
+              if(key > time) {
+                aggregated_result[key][title] += row.reduction;
+
+              }
+            });
           }, function () {
 
-            rows.sort(function(a,b){
-              return (a.hour - b.hour)*60 + a.minute - b.minute;
-            });
-            for(var i = 0; i < rows.length; i++){
-              aggregated_result[rows[i].time][rows[i].title] += rows[i].count;
-              for(var j = i+1; j < rows.length;j++){
-                aggregated_result[rows[j].time][rows[i].title] += rows[i].count;
-              }
-            }
 
             socket.emit('initialize_tweet_aggregated', aggregated_result);
             socket.emit('initialize_tweet_not_aggregated', result);
