@@ -123,7 +123,7 @@ module.exports = function (db, io) {
       getTweetCountAndSendEvents(conn, socket);
       db.r.table('Tweet').changes(
           {
-            squash: true
+            squash: 5
           }
       ).run(conn, function (err, cursor) {
         cursor.each(function (err, row) {
@@ -131,13 +131,13 @@ module.exports = function (db, io) {
             throw err;
           }
           socket.emit('tweet', row);
-          getTweetCountAndSendEvents(conn, socket);
+          //getTweetCountAndSendEvents(conn, socket);
         }, function () {
           // finished processing
         });
       });
       socket.on('disconnect', function(socket){
-  
+
       })
     });
 

@@ -3,5 +3,6 @@
  */
 angular.module('whoWillWinOscars', [
   'whoWillWinOscars.controllers',
-  'whoWillWinOscars.components'
+  'whoWillWinOscars.components',
+  'ngSanitize'
 ]);

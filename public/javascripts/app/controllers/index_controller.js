@@ -7,7 +7,7 @@ angular.module('whoWillWinOscars.controllers')
         $interval,
         $timeout
     ){
-      $scope.socket = io.connect('http://localhost:3001', {
+      $scope.socket = io.connect('http://192.168.1.106:3001', {
         multiplex: false
       });
       $scope.tweets = [];
@@ -152,6 +152,7 @@ angular.module('whoWillWinOscars.controllers')
           if(!$scope.tweet){
             $scope.tweethide = false;
             $scope.tweet = data.new_val;
+            $scope.tweet.text = $scope.tweet.text.replace(new RegExp($scope.tweet.movies[0], "ig"), '<span class="'+$scope.tweet.movies[0]+'">'+$scope.tweet.movies[0]+'</span>')
             $scope.initialized = true;
             $timeout(function(){
               $scope.tweethide = true;
