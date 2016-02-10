@@ -137,8 +137,6 @@ angular.module('whoWillWinOscars.controllers')
       });
 
       $scope.socket.on("disconnect", function(socket){
-        $scope.socket.disconnect();
-        $scope.socket.removeAllListeners();
         console.log("client disconnected from server");
       });
 
