@@ -64,7 +64,7 @@ module.exports = function (db, io) {
     row.movies.forEach(function(title){
       cache[time][title] += 1;
     });
-    lastUpdate = now;
+    lastUpdate = currentTime();
 
     return cache[time];
   }
