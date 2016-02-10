@@ -138,7 +138,11 @@ module.exports = function (db, io) {
           // finished processing
         });
       });
+      socket.on('disconnect', function(socket){
+  
+      })
     });
+
   })
 }
 

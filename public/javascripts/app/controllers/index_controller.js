@@ -8,7 +8,7 @@ angular.module('whoWillWinOscars.controllers')
         $timeout
     ){
       $scope.socket = io.connect('http://localhost:3001', {
-        'force new connection':true
+        multiplex: false
       });
       $scope.tweets = [];
       $scope.newVal = null;
@@ -136,6 +136,8 @@ angular.module('whoWillWinOscars.controllers')
       });
 
       $scope.socket.on("disconnect", function(socket){
+        $scope.socket.disconnect();
+        $scope.socket.removeAllListeners();
         console.log("client disconnected from server");
       });
 
