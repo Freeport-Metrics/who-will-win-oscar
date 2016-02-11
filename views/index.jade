@@ -17,12 +17,12 @@ block content
                 strong(class="color-white") According to Twitter Users
                 p(class="no-margin text-color") We measure Twitter buzz in real time counting twits containing the movietitle keyword
       div(class='row section section  text-center')
-          div(class="col-xs-1" ng-repeat="counter in counters" ng-class="{'highlight': applyHighlight($index)}")
+          div(class="col-xs-1" ng-repeat="counter in counters")
               div(class="laurel-wrapper {{applyClass(counter.name)}}")
                   i( class="laurel icon-laurel-left")
                   span(class="laurel-text-tweet")
                     i(class='fa fa-twitter {{applyClass(counter.name)}}')
-                  span(class="laurel-text" ng-bind="counter.name")
+                  span(class="laurel-text" ng-bind="movieLabels[counter.name]")
                   span(class="laurel-text-counter" ng-bind="counter.value")
                   i( class="laurel icon-laurel-right")
       div(class='row section section ')
@@ -36,7 +36,7 @@ block content
         div(class='overlay-mask')
         div(class='tweet-mask')
         div(id="aggregated_chart" style="height: 500px;")
-        div(id="not_aggregated_chart")
+        div(id="not_aggregated_chart" style="height: 500px;")
 
 
 

@@ -13,6 +13,7 @@ angular.module('whoWillWinOscars.controllers')
       });
       $scope.tweets = [];
       $scope.newVal = null;
+      $scope.newValNonAgg = null;
       $scope.tweet = null;
       $scope.tweethide = false;
       $scope.initialized = false;
@@ -29,23 +30,21 @@ angular.module('whoWillWinOscars.controllers')
         'Martian': [],
         'time': []
       }
+
+      $scope.movieLabels = {
+        'Big Short': 'The Big Short',
+        'Brooklyn': 'Brooklyn',
+        'Room': 'Room',
+        'Mad Max': 'Mad Max: Fury Road',
+        'Spotlight': 'Spotlight',
+        'Revenant': 'The Revenant',
+        'Bridge Of Spies': 'Bridge Of Spies',
+        'Martian': 'The Martian',
+      }
+
       $scope.preparedNotAggregatedData = angular.copy($scope.preparedAggregatedData);
 
-      $scope.applyClass = applyClass;
-      $scope.applyHighlight = applyHighlight;
-
-      function applyHighlight(index){
-        return index == 0
-      }
-
-      function applyClass(params){
-        if(!params){
-          return;
-        }
-        return params.split(' ').join('-')
-      }
-
-      var chartConfig = {
+      $scope.chartConfig = {
         bindto: '#aggregated_chart',
         data: {
           x: 'time',
@@ -90,14 +89,10 @@ angular.module('whoWillWinOscars.controllers')
           }
         }
       }
-
-      var aggregatedChart = c3.generate(chartConfig);
-
-      chartConfig['bindto'] = '#not_aggregated_chart';
-      chartConfig['data']['json'] = $scope.preparedNotAggregatedData;
-      var nonAggregatedChart = c3.generate(chartConfig);
-
-
+      $scope.aggregatedChart = c3.generate($scope.chartConfig);
+      $scope.chartConfig['bindto'] = '#not_aggregated_chart';
+      $scope.chartConfig['data']['json'] = $scope.preparedNotAggregatedData;
+      $scope.nonAggregatedChart = c3.generate($scope.chartConfig);
 
       $scope.socket.on("connect", function(socket){
         console.log("client connected to server");
@@ -105,12 +100,6 @@ angular.module('whoWillWinOscars.controllers')
 
       $scope.socket.on("disconnect", function(socket){
         console.log("client disconnected from server");
-      });
-
-      $scope.socket.on('tweet_counters', function(data){
-        $scope.$apply(function(){
-          $scope.counters = data;
-        });
       });
 
       $scope.socket.on('tweet', function(data){
@@ -132,86 +121,107 @@ angular.module('whoWillWinOscars.controllers')
       });
 
       $scope.socket.on('initialize_tweet_aggregated', function(data){
+        $scope.prepareChart($scope.aggregatedChart, data, $scope.preparedAggregatedData);
+        $scope.counters.length = 0;
+        var counter_key = Object.keys(data[0])
+        $scope.updateCounters(data[0][counter_key]);
+        $scope.updateChart($scope.aggregatedChart, $scope.preparedAggregatedData, 'newVal', true);
+      })
+
+      $scope.socket.on('initialize_tweet_not_aggregated', function(data){
+        $scope.prepareChart($scope.nonAggregatedChart, data, $scope.preparedNotAggregatedData);
+        $scope.updateChart($scope.nonAggregatedChart, $scope.preparedNotAggregatedData, 'newValNonAgg', false);
+      })
+
+      $scope.socket.on('new_tweets_aggregates', function(data){
+        $scope.newVal = data;
+      })
+
+      $scope.socket.on('new_tweets', function(data){
+        $scope.newValNonAgg = data;
+      })
+
+      $scope.applyClass = applyClass;
+      $scope.applyHighlight = applyHighlight;
+      $scope.prepareChart = prepareChart;
+      $scope.updateChart = updateChart;
+      $scope.updateCounters = updateCounters;
+
+      function applyHighlight(index){
+        return index == 0
+      }
+
+      function applyClass(params){
+        if(!params){
+          return;
+        }
+        return params.split(' ').join('-')
+      }
+
+      function prepareChart(chart, data, chartData){
         angular.forEach(data, function(value, index){
           var key = Object.keys(value)[0]
-          $scope.preparedAggregatedData['time'].push(key)
+          chartData['time'].push(key)
           angular.forEach(value[key], function(val,key){
-            $scope.preparedAggregatedData[key].push(val);
+            chartData[key].push(val);
           })
         })
-        aggregatedChart.load({
-          json: $scope.preparedAggregatedData
+        chart.load({
+          json: chartData
         });
-        var counter_key = Object.keys(data[0])
-        angular.forEach(data[0][counter_key], function(value, key){
-          $scope.counters.push({value: value, name: key})
-        });
-        $scope.counters = $filter('orderBy')($scope.counters, 'value', true);
+      }
+
+      function updateChart(chart, chartData, newValListener, updateCounters){
         $interval(function(){
           var date = new Date();
           var current_time =  d3.time.format("%H:%M")(new Date(date.getUTCFullYear(), date.getUTCMonth(),
               date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()));
-
           var time = false;
-          angular.forEach($scope.preparedAggregatedData['time'], function(value, index){
+          angular.forEach(chartData['time'], function(value, index){
             if(value == current_time){
               time = true;
             }
           })
           if(!time){
-            $scope.preparedAggregatedData['time'].unshift(current_time);
-            $scope.preparedAggregatedData['time'].pop();
-            angular.forEach($scope.preparedAggregatedData, function(value, key){
+            chartData['time'].unshift(current_time);
+            chartData['time'].pop();
+            angular.forEach(chartData, function(value, key){
               value.pop();
               value.unshift(value[0]);
             });
-            aggregatedChart.load({
-              json: $scope.preparedAggregatedData
+            chart.load({
+              json: chartData
             });
           }
-          if($scope.newVal){
-            $scope.counters.length = 0;
-            var counter_key = Object.keys($scope.newVal)[0]
-            angular.forEach($scope.newVal[counter_key], function(newValue, key){
+          if($scope[newValListener]){
+            var counter_key = Object.keys($scope[newValListener])[0]
+            if(updateCounters){
+              $scope.counters.length = 0;
+              $scope.updateCounters($scope[newValListener][counter_key])
+            }
+            angular.forEach($scope[newValListener][counter_key], function(newValue, key){
               if(!time){
-                $scope.preparedAggregatedData[key].unshift(newValue);
-                if($scope.preparedAggregatedData[key].length > 60){
-                  $scope.preparedAggregatedData[key].pop();
+                chartData[key].unshift(newValue);
+                if(chartData[key].length > 60){
+                  chartData[key].pop();
                 }
               }else{
-                $scope.preparedAggregatedData[key][0];
+                chartData[key][0];
               }
-              $scope.counters.push({value: newValue, name: key})
             })
-            $scope.counters = $filter('orderBy')($scope.counters, 'value', true);
-            aggregatedChart.load({
-              json: $scope.preparedAggregatedData
+            chart.load({
+              json: chartData
             });
-            $scope.newVal = null;
+            $scope[newValListener] = null;
           }
         }, 1000)
-      })
+      }
 
+      function updateCounters(data){
+        angular.forEach(data, function(value, key){
+          $scope.counters.push({value: value, name: key})
+        });
+        $scope.counters = $filter('orderBy')($scope.counters, 'value', true);
+      }
 
-      $scope.socket.on('new_tweets_aggregates', function(data){
-        $scope.newVal = data;
-        console.log(data);
-      })
-      //$scope.socket.on('initialize_tweet_not_aggregated', function(data){
-      //  angular.forEach(data, function(value,key){
-      //    $scope.preparedNotAggregatedData['time'].push(key);
-      //    if($scope.preparedNotAggregatedData['time'].length > 59){
-      //      $scope.preparedNotAggregatedData['time'].shift();
-      //    }
-      //    angular.forEach(data[key], function(value,key){
-      //      $scope.preparedNotAggregatedData[key].push(value);
-      //      if($scope.preparedNotAggregatedData[key].length > 59){
-      //        $scope.preparedNotAggregatedData[key].shift();
-      //      }
-      //    })
-      //  })
-      //  nonAggregatedChart.load({
-      //    json: $scope.preparedNotAggregatedData
-      //  });
-      //})
     })

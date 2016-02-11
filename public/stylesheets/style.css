@@ -78,9 +78,11 @@ a {
 .c3-axis-x .tick {
   /*display: none;*/
 }
-#aggregated_chart .c3-axis-y2 .tick {
+
+.c3-axis-y2 .tick {
   display: none;
 }
+
 
 .legend{
   font-weight: bold;
@@ -269,7 +271,7 @@ h1.gold{
   left: 0;
   right: 0;
   bottom: 40%;
-  font-size: 200%
+  font-size: 200%;
 }
 
 .laurel-text-tweet{
