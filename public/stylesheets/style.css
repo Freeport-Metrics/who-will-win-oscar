@@ -8,6 +8,7 @@ body {
 h1{
   font-size: 800%;
   margin-top: 30px;
+  margin-bottom: 0px;
   font-family: "Josefin Sans";
 }
 
@@ -28,9 +29,9 @@ a {
   z-index: 999;
 
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.65+50,0+100 */
-  background: -moz-linear-gradient(left, rgba(51,51,51,1) 5%, rgba(51,51,51,0.7) 50%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(left, rgba(51,51,51,1) 5%,rgba(51,51,51,0.7) 50%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right, rgba(51,51,51,1) 5%,rgba(51,51,51,0.7) 50%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  background: -moz-linear-gradient(left, rgba(36, 36, 36,1) 5%, rgba(36, 36, 36, 0.7) 50%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, rgba(36, 36, 36,1) 5%,rgba(36, 36, 36,0.7) 50%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, rgba(36, 36, 36,1) 5%, rgba(36, 36, 36 ,0.7) 50%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=1 ); /* IE6-9 */
 }
 
@@ -102,35 +103,35 @@ a {
 /** Specific styles **/
 
 .Revenant{
-  color: #69788C;
+  color: #69788C !important;
 }
 
 .Martian{
-  color: #AA5A28;
+  color: #AA5A28 !important;
 }
 
 .Bridge-Of-Spies{
-  color: #821E1E;
+  color: #F14752 !important;
 }
 
 .Spotlight{
-  color: #DCDCDC;
+  color: #DCDCDC !important;
 }
 
 .Mad-Max{
-  color: #E1BE32;
+  color: #E1BE32 !important;
 }
 
 .Room{
-  color: #648CAA;
+  color: #648CAA !important;
 }
 
 .Brooklyn{
-  color: #87A096;
+  color: #87A096 !important;
 }
 
 .Big-Short{
-  color: #82643C;
+  color: #82643C !important;
 }
 
 .block{
@@ -164,29 +165,19 @@ a {
   text-align: center;
 }
 
-.tweet-container{
+.text-container{
   min-height: 50px;
   margin-bottom: 10px;
+  display: inline-block;
+  width: 50%;
 }
 
 .tweet{
-  background-color: rgb(71,71,71);
   padding: 10px;
   display: inline-block;
   border-radius: 4px;
   color: whitesmoke;
-}
-
-.tweet:before{
-  position: absolute;
-  bottom: -10px;
-  display: inline-block;
-  border-right: 7px solid transparent;
-  border-top: 7px solid #eee;
-  border-left: 7px solid transparent;
-  border-top-color: rgb(71,71,71);
-  border-width: 10px;
-  content: '';
+  font-size: 150%;
 }
 
 .tweet.Revenant{
@@ -250,48 +241,11 @@ h1.gold{
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3e2c7 ', endColorstr='#e9d4b3 ',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 
-.laurel{
-  width: 200px;
-  height: 200px;
-}
-
 .laurel-wrapper{
-  width: 400px;
-  height: 200px;
+  width: 200px;
+  height: 130px;
   display: inline-block;
   position: relative;
-}
-
-.laurel-wrapper.Revenant svg{
-  fill: #69788C;
-}
-
-.laurel-wrapper.Martian svg{
-  fill: #AA5A28;
-}
-
-.laurel-wrapper.Bridge-Of-Spies svg{
-  fill: #821E1E;
-}
-
-.laurel-wrapper.Spotlight svg{
-  fill: #DCDCDC;
-}
-
-.laurel-wrapper.Mad-Max svg{
-  fill: #E1BE32;
-}
-
-svg{
-  fill: #648CAA;
-}
-
-.laurel-wrapper.Brooklyn svg{
-  fill: #87A096;
-}
-
-.laurel-wrapper.Big-Short svg{
-  fill: #82643C;
 }
 
 .laurel-text{
@@ -300,8 +254,9 @@ svg{
   margin-right: auto;
   left: 0;
   right: 0;
-  bottom: 35%;
-  font-size: 150%;
+  bottom: 0%;
+  font-size: 100%;
+  word-wrap: break-word;
 }
 .laurel-text-counter{
   position: absolute;
@@ -309,10 +264,25 @@ svg{
   margin-right: auto;
   left: 0;
   right: 0;
-  bottom: 50%;
-  font-size: 400%
+  bottom: 40%;
+  font-size: 200%
 }
 
+.laurel-text-tweet{
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  bottom: 65%;
+  font-size: 200%
+}
+
+.laurel-text-tweet .fa-twitter{
+  font-size: 80%
+}
+
+/* MARGINS */
 
 .m-t-xl{
   margin-top: 35px;
@@ -333,3 +303,65 @@ svg{
 .m-t-xs{
   margin-top: 15px;
 }
+
+.m-r-xl{
+  margin-right: 35px;
+}
+
+.m-r-lg{
+  margin-right: 30px;
+}
+
+.m-r-md{
+  margin-right: 25px;
+}
+
+.m-r-sm{
+  margin-right: 20px;
+}
+
+.m-r-xs{
+  margin-right: 15px;
+}
+
+
+/* Font colors */
+
+.fa-facebook{
+  color: #3B5998;
+}
+
+.fa-twitter{
+  color: #1DA1F2;
+}
+
+.fa-github{
+  color: #333;
+}
+
+.fa-google{
+  color: #DC4B3F;
+}
+
+/* Section Styles */
+
+.section-description{
+  font-size: 100%;
+}
+
+.section{
+  margin-top: 30px;
+}
+
+.s-m-t-lg{
+  margin-top: 100px;
+}
+
+.s-m-t-md{
+  margin-top: 75px;
+}
+
+.s-m-t-sm{
+  margin-top: 50px;
+}
+
