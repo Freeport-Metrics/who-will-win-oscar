@@ -27,7 +27,7 @@ angular.module('whoWillWinOscars.controllers')
         'Revenant': [],
         'Bridge Of Spies': [],
         'Martian': [],
-        'time': [0,0,0,0,0,0,0,0]
+        'time': []
       }
       $scope.preparedNotAggregatedData = angular.copy($scope.preparedAggregatedData);
 
@@ -132,57 +132,58 @@ angular.module('whoWillWinOscars.controllers')
       });
 
       $scope.socket.on('initialize_tweet_aggregated', function(data){
-        console.log(data)
-        console.log(Object.keys(data))
-        $scope.preparedAggregatedData['time'] = Object.keys(data);
-        angular.forEach($scope.preparedAggregatedData['time'], function(value, index){
-          angular.forEach(data[value], function(val,key){
+        angular.forEach(data, function(value, index){
+          var key = Object.keys(value)[0]
+          $scope.preparedAggregatedData['time'].push(key)
+          angular.forEach(value[key], function(val,key){
             $scope.preparedAggregatedData[key].push(val);
-            if($scope.preparedAggregatedData[key].length > 59){
-              $scope.preparedAggregatedData[key].shift();
-            }
           })
         })
         aggregatedChart.load({
           json: $scope.preparedAggregatedData
         });
-        angular.forEach(data[$scope.preparedAggregatedData['time'][$scope.preparedAggregatedData['time'].length - 1]], function(value, key){
+        var counter_key = Object.keys(data[0])
+        angular.forEach(data[0][counter_key], function(value, key){
           $scope.counters.push({value: value, name: key})
         });
-
         $scope.counters = $filter('orderBy')($scope.counters, 'value', true);
         $interval(function(){
           var date = new Date();
           var current_time =  d3.time.format("%H:%M")(new Date(date.getUTCFullYear(), date.getUTCMonth(),
               date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()));
-          var time = $.inArray(current_time, $scope.preparedAggregatedData['time'])
+
+          var time = false;
+          angular.forEach($scope.preparedAggregatedData['time'], function(value, index){
+            if(value == current_time){
+              time = true;
+            }
+          })
           if(!time){
-            $scope.preparedAggregatedData['time'].push(current_time);
-            $scope.preparedAggregatedData['time'].shift();
+            $scope.preparedAggregatedData['time'].unshift(current_time);
+            $scope.preparedAggregatedData['time'].pop();
             angular.forEach($scope.preparedAggregatedData, function(value, key){
-              value.shift();
-              value.push(value[value.length-1]);
+              value.pop();
+              value.unshift(value[0]);
             });
             aggregatedChart.load({
               json: $scope.preparedAggregatedData
             });
           }
           if($scope.newVal){
-            var index = null;
-            var counter_collection = null;
-            angular.forEach($scope.newVal, function(newValue, key){
-              angular.forEach($scope.preparedAggregatedData['time'], function(value, i){
-                if(key == value){
-                  index = i;
+            $scope.counters.length = 0;
+            var counter_key = Object.keys($scope.newVal)[0]
+            angular.forEach($scope.newVal[counter_key], function(newValue, key){
+              if(!time){
+                $scope.preparedAggregatedData[key].unshift(newValue);
+                if($scope.preparedAggregatedData[key].length > 60){
+                  $scope.preparedAggregatedData[key].pop();
                 }
-              })
-              counter_collection = newValue;
+              }else{
+                $scope.preparedAggregatedData[key][0];
+              }
+              $scope.counters.push({value: newValue, name: key})
             })
-            if(index != null){
-              angular.forEach(counter_collection, function(val, key){
-                $scope.preparedAggregatedData[key][index] = val;
-              })
-            }
+            $scope.counters = $filter('orderBy')($scope.counters, 'value', true);
             aggregatedChart.load({
               json: $scope.preparedAggregatedData
             });
@@ -191,21 +192,26 @@ angular.module('whoWillWinOscars.controllers')
         }, 1000)
       })
 
-      $scope.socket.on('initialize_tweet_not_aggregated', function(data){
-        angular.forEach(data, function(value,key){
-          $scope.preparedNotAggregatedData['time'].push(key);
-          if($scope.preparedNotAggregatedData['time'].length > 59){
-            $scope.preparedNotAggregatedData['time'].shift();
-          }
-          angular.forEach(data[key], function(value,key){
-            $scope.preparedNotAggregatedData[key].push(value);
-            if($scope.preparedNotAggregatedData[key].length > 59){
-              $scope.preparedNotAggregatedData[key].shift();
-            }
-          })
-        })
-        nonAggregatedChart.load({
-          json: $scope.preparedNotAggregatedData
-        });
+
+      $scope.socket.on('new_tweets_aggregates', function(data){
+        $scope.newVal = data;
+        console.log(data);
       })
+      //$scope.socket.on('initialize_tweet_not_aggregated', function(data){
+      //  angular.forEach(data, function(value,key){
+      //    $scope.preparedNotAggregatedData['time'].push(key);
+      //    if($scope.preparedNotAggregatedData['time'].length > 59){
+      //      $scope.preparedNotAggregatedData['time'].shift();
+      //    }
+      //    angular.forEach(data[key], function(value,key){
+      //      $scope.preparedNotAggregatedData[key].push(value);
+      //      if($scope.preparedNotAggregatedData[key].length > 59){
+      //        $scope.preparedNotAggregatedData[key].shift();
+      //      }
+      //    })
+      //  })
+      //  nonAggregatedChart.load({
+      //    json: $scope.preparedNotAggregatedData
+      //  });
+      //})
     })

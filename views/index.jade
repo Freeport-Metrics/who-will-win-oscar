@@ -26,10 +26,10 @@ block content
                   span(class="laurel-text-counter" ng-bind="counter.value")
                   i( class="laurel icon-laurel-right")
       div(class='row section section ')
-        div(class='col-xs-12 text-center ')
+        div(class='col-xs-12 text-center tweet-container')
             div(class='text-container')
                 div(class="tweet" ng-class="{'tweet-hide': tweethide, 'tweet-show': !tweethide}" ng-if="initialized")
-                    i(class="fa fa-twitter {{tweet.movies[0]}} fa-4x")
+                    i(class="fa fa-twitter {{tweet.movies[0]}} fa-3x")
                     div
                         p(ng-bind-html="tweet.text")
        div(class='col-xs-12 mask-wrapper')

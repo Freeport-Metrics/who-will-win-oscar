@@ -1,7 +1,7 @@
 body {
   background-color: rgb(36, 36, 36);
   padding: 50px;
-  font: 16px Helvetica, "Lucida Grande", Arial, sans-serif;
+  font: 16px "Josefin Sans", "Lucida Grande", Arial, sans-serif;
   line-height: 1.5;
 }
 
@@ -163,6 +163,10 @@ a {
 
 .text-center{
   text-align: center;
+}
+
+.tweet-container{
+  min-height: 200px;
 }
 
 .text-container{
