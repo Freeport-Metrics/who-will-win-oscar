@@ -10,7 +10,7 @@ module.exports = function (db, io) {
   };
 
 
-  var initialResult = function (minutesAgo,fromDate, initialValues) {
+  var initialResult = function (minutesAgo, fromDate, initialValues) {
     var minutes = [];
     if (!minutesAgo) {
       minutesAgo = 60;
@@ -53,7 +53,7 @@ module.exports = function (db, io) {
         time: last_key
       };
       var minutesAgo = 60 * (row.hour - lastUpdate.h) + (row.minute - lastUpdate.m);
-      var newCounters = initialResult(minutesAgo,row.date, initial);
+      var newCounters = initialResult(minutesAgo, row.date, initial);
 
       newCounters.reverse().forEach(function (val) {
         cache.unshift(val);
@@ -89,6 +89,25 @@ module.exports = function (db, io) {
         }).count();
   }
 
+  function getAllTweetsBefore(minutes) {
+    var seconds = minutes * 60;
+    return r.table('Tweet')
+        .orderBy({index: 'created_at'})
+        .filter(function (tweet) {
+          return r.now().sub(seconds).gt(tweet('created_at'));
+        })
+        .concatMap(function (tweet) {
+          return tweet('movies').map(function (title) {
+            return {
+              title: title,
+            }
+          });
+        })
+        .group(function (movie) {
+          return movie('title');
+        }).count();
+  }
+
   function initialize(conn, callback) {
     getTweetCountPerMinuteFrom(60).run(conn, function (err, cursor) {
       if (err) throw err;
@@ -116,12 +135,26 @@ module.exports = function (db, io) {
               }
             });
           }, function () {
-            aggregatedCache = aggregated_result;
-            tempCache = result;
-            if (callback) {
-              callback();
-            }
-          });
+            getAllTweetsBefore(60).run(conn, function (err, cursor) {
+              if (err) throw err;
+              cursor.each(function (err, row) {
+                    if (err) throw err;
+                    aggregated_result.forEach(function (counter) {
+                      counter[Object.keys(counter)[0]][row['group']] += row['reduction'];
+                    });
+                  }
+                  , function () {
+
+                    aggregatedCache = aggregated_result;
+                    tempCache = result;
+                    if (callback) {
+                      callback();
+                    }
+                  });
+
+
+            });
+          })
     });
   }
 
