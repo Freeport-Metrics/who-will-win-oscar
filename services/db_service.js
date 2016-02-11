@@ -1,37 +1,21 @@
 /**
  * Created by Matuszewski on 04/02/16.
  */
-var extend = require('util')._extend;
-
-
 module.exports = function (db, io) {
   var r = db.r;
   var movies = ['Revenant', 'Mad Max', 'Martian', 'Brooklyn', 'Room', 'Spotlight', 'Bridge Of Spies', 'Big Short'];
-  var lastUpdate = {
-    h: 0,
-    m: 0,
-    time: '00:00'
-  };
 
   var toTime = function (h, m) {
     return ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2)
   };
 
-  var currentTime = function () {
-    var now = new Date();
-    return {
-      h: now.getUTCHours(),
-      m: now.getUTCMinutes(),
-      time: toTime(now.getUTCHours(), now.getUTCMinutes())
-    };
-  };
 
-  var initialResult = function (minutesAgo, initialValues) {
+  var initialResult = function (minutesAgo,fromDate, initialValues) {
     var minutes = [];
     if (!minutesAgo) {
       minutesAgo = 60;
     }
-    var now = new Date();
+    var now = fromDate ? fromDate : new Date();
     var h = now.getUTCHours();
     var m = now.getUTCMinutes();
 
@@ -55,14 +39,21 @@ module.exports = function (db, io) {
   var tempCache = null;
   var cacheCapacity = 60;
 
-  function updateCache(row, cache) {
+  function updateCache(row, cache, isAggregated) {
     var time = toTime(row.hour, row.minute);
 
     if (!cache[0][time]) {
-      var initial = cache[lastUpdate.time];
-      var now = currentTime();
-      var minutesAgo = 60 * (now.h - lastUpdate.h) + (now.m - lastUpdate.m);
-      var newCounters = initialResult(minutesAgo, initial);
+      var last_key = Object.keys(cache[0])[0];
+
+      var initial = isAggregated ? cache[0][last_key] : null;
+
+      var lastUpdate = {
+        h: last_key.split(':')[0],
+        m: last_key.split(':')[1],
+        time: last_key
+      };
+      var minutesAgo = 60 * (row.hour - lastUpdate.h) + (row.minute - lastUpdate.m);
+      var newCounters = initialResult(minutesAgo,row.date, initial);
 
       newCounters.reverse().forEach(function (val) {
         cache.unshift(val);
@@ -71,13 +62,9 @@ module.exports = function (db, io) {
       cache.splice(-minutesAgo, minutesAgo);
     }
     row.movies.forEach(function (title) {
-      cache[0][time][title] += 1;
+      cache[0][Object.keys(cache[0])[0]][title] += 1;
     });
-    lastUpdate = {
-      h: time.split(':')[0],
-      m: time.split(':')[1],
-      time: time
-    };
+
     return cache[0];
   }
 
@@ -131,12 +118,6 @@ module.exports = function (db, io) {
           }, function () {
             aggregatedCache = aggregated_result;
             tempCache = result;
-            var last_key = Object.keys(aggregatedCache[0])[0];
-            lastUpdate = {
-              h: last_key.split(':')[0],
-              m: last_key.split(':')[1],
-              time: last_key
-            };
             if (callback) {
               callback();
             }
@@ -173,8 +154,8 @@ module.exports = function (db, io) {
         if (!row.is_new) {
           return;
         }
-        var lastCounterAggregated = updateCache(row, aggregatedCache);
-        var lastCounter = updateCache(row, tempCache);
+        var lastCounterAggregated = updateCache(row, aggregatedCache, true);
+        var lastCounter = updateCache(row, tempCache, false);
         if (callback) {
           callback(row, lastCounter, lastCounterAggregated);
         }
