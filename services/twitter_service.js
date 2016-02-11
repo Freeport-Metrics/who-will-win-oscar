@@ -1,24 +1,42 @@
 var Tweet = require('../models/tweet');
-
-var movies_hashtags = ['#Revenant', '#MadMax', '#Martian', '#Brooklyn', '#Room', '#Spotlight', '#BridgeOfSpies', '#BigShort']
+                    //              FuryRoad    #TheMartian
+var movies_hashtags = {
+    '#Revenant': 'Revenant',
+    '@RevenantMovie': 'Revenant',
+    '#MadMax': 'Mad Max',
+    '#RoadFury': 'Mad Max',
+    '@MadMax4FuryRoad': 'Mad Max',
+    '#TheMartian': 'Martian',
+    '@MartianMovie': 'Martian',
+    '#BrooklynMovie': 'Brooklyn',
+    '#roommovie': 'Room',
+    '@RoomTheMovie': 'Room',
+    '#SpotlightMovie': 'Spotlight',
+    '@SpotlightMovie': 'Spotlight',
+    '#BridgeOfSpies': 'Bridge Of Spies',
+    '@BridgeofSpies': 'Bridge Of Spies',
+    '#BigShort': 'Big Short',
+    '@thebigshort': 'Big Short',
+    '#TheBigShort': 'Big Short'
+};
 var movies = ['Revenant', 'Mad Max', 'Martian', 'Brooklyn', 'Room', 'Spotlight', 'Bridge Of Spies', 'Big Short']
 
 
 module.exports = function(twitter, models){
-    //testing stream api
-    twitter.stream('statuses/filter', {track: movies.join(',')},  function(stream){
+    var keywords = Object.keys(movies_hashtags);
+    twitter.stream('statuses/filter', {track: keywords.join(',')},  function(stream){
     stream.on('data', function(tweet) {
         tweet.movies = [];
-        movies.forEach(function(value, index){
+        keywords.forEach(function(value, index){
             if(tweet.text.toLowerCase().includes(value.toLowerCase())){
-                tweet.movies.push(value);
+                tweet.movies.push(movies_hashtags[value]);
             }
         })
         if(tweet.movies.length == 0){
             return;
         }
         var db_tweet = models.tweet.find(tweet.id).then(function(){
-            db_tweet.update(tweet);
+
         }).catch(models.errors.DocumentNotFound, function(err) {
             models.tweet.create(tweet).catch(function(err){
 
