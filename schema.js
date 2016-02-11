@@ -31,9 +31,10 @@ var User = thinky.createModel('User', {
     profile_image_url: String,
 });
 
-Tweet.ensureIndex('created_at');
 Tweet.belongsTo(User, 'user', 'userId', 'id');
 User.hasMany(Tweet, 'tweets', 'id', 'userId');
+
+Tweet.ensureIndex('created_at');
 
 module.exports = {
     errors: errors,
