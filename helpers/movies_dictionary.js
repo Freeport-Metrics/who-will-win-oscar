@@ -2,21 +2,53 @@ module.exports = {
   movies_hashtags: {
     '#Revenant': 'Revenant',
     '@RevenantMovie': 'Revenant',
+    'Leonardo DiCaprio': 'Revenant',
+    'Tom Hardy': 'Revenant',
+
     '#MadMax': 'Mad Max',
     '#RoadFury': 'Mad Max',
     '@MadMax4FuryRoad': 'Mad Max',
+    'Charlize Theron': 'Mad Max',
+
+
     '#TheMartian': 'Martian',
     '@MartianMovie': 'Martian',
+    'Matt Damon': 'Martian',
+    'Kate Mara': 'Martian',
+    'Jessica Chastain': 'Martian',
+
+
+
     '#BrooklynMovie': 'Brooklyn',
+    'Saoirse Ronan': 'Brooklyn',
+    'Julie Walters': 'Brooklyn',
+
+
     '#roommovie': 'Room',
     '@RoomTheMovie': 'Room',
+    'Brie Larson': 'Room',
+    'Jacob Tremblay': 'Room',
+
     '#SpotlightMovie': 'Spotlight',
     '@SpotlightMovie': 'Spotlight',
+    'Mark Ruffalo': 'Spotlight',
+    'Michael Keaton': 'Spotlight',
+     'Rachel Adams': 'Spotlight',
+
+
     '#BridgeOfSpies': 'Bridge Of Spies',
     '@BridgeofSpies': 'Bridge Of Spies',
+    'Mark Rylance': 'Bridge Of Spies',
+    'Tom Hanks': 'Bridge Of Spies',
+
+
     '#BigShort': 'Big Short',
     '@thebigshort': 'Big Short',
-    '#TheBigShort': 'Big Short'
+    '#TheBigShort': 'Big Short',
+    'Ryan Gosling': 'Big Short',
+    'Christian Bale': 'Big Short'
+
+
   },
   movies: ['Revenant', 'Mad Max', 'Martian', 'Brooklyn', 'Room', 'Spotlight', 'Bridge Of Spies', 'Big Short'],
   movies_labels: {
