@@ -11,7 +11,8 @@ module.exports = function(twitter, models){
     stream.on('data', function(tweet) {
         tweet.movies = [];
         keywords.forEach(function(value, index){
-            if(tweet.text.toLowerCase().includes(value.toLowerCase())){
+
+            if(tweet.movies.indexOf(movies_hashtags[value]) < 0 && tweet.text.toLowerCase().includes(value.toLowerCase())){
                 tweet.movies.push(movies_hashtags[value]);
             }
         })

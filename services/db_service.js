@@ -78,13 +78,16 @@ module.exports = function (db, io) {
     return r.table('Tweet')
         .orderBy({index: 'created_at'})
         .filter(function (tweet) {
-          return r.now().sub(tweet('created_at')).lt(seconds);
+          return r.now().sub(seconds).gt(tweet('created_at'));
         })
+        .filter(r.row('movies').contains(function (movie){
+          return r.expr(movies).contains(movie);
+        }))
         .concatMap(function (tweet) {
-          return tweet('movies').map(function (title) {
+          return tweet('movies').distinct().map(function (title) {
             return {
               title: title,
-              tweet_created_at: tweet('created_at')
+              'tweet_created_at': tweet('created_at')
             }
           });
         })
@@ -100,10 +103,13 @@ module.exports = function (db, io) {
         .filter(function (tweet) {
           return r.now().sub(seconds).gt(tweet('created_at'));
         })
+        .filter(r.row('movies').contains(function (movie){
+          return r.expr(movies).contains(movie);
+        }))
         .concatMap(function (tweet) {
-          return tweet('movies').map(function (title) {
+          return tweet('movies').distinct().map(function (title) {
             return {
-              title: title,
+              title: title
             }
           });
         })
