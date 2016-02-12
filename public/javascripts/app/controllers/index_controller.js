@@ -95,8 +95,8 @@ angular.module('whoWillWinOscars.controllers')
           if(!$scope.tweet){
             $scope.tweethide = false;
             $scope.tweet = data;
-            $scope.tweet.text = $scope.tweet.text.replace(new RegExp($scope.tweet.movies[0], "ig"),
-                '<span class="'+$scope.tweet.movies[0]+'">'+$scope.tweet.movies[0]+'</span>')
+            $scope.tweet.text = $scope.tweet.text.replace(new RegExp($scope.tweet.movies[0].replace(' ', ''), "ig"),
+                '<span class="'+$scope.applyClass($scope.tweet.movies[0])+'">'+$scope.tweet.movies[0]+'</span>')
             $scope.initialized = true;
             $timeout(function(){
               $scope.tweethide = true;
@@ -143,7 +143,7 @@ angular.module('whoWillWinOscars.controllers')
         if(!params){
           return;
         }
-        return params.split(' ').join('-')
+        return params.split(' ').join('-').toLowerCase();
       }
 
       function prepareChart(chart, data, chartData){
