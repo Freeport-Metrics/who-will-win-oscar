@@ -196,7 +196,7 @@ angular.module('whoWillWinOscars.controllers')
                   chartData[key].pop();
                 }
               }else{
-                chartData[key][0];
+                chartData[key][0] = newValue;
               }
             })
             chart.load({
