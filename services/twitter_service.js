@@ -1,25 +1,8 @@
 var Tweet = require('../models/tweet');
-                    //              FuryRoad    #TheMartian
-var movies_hashtags = {
-    '#Revenant': 'Revenant',
-    '@RevenantMovie': 'Revenant',
-    '#MadMax': 'Mad Max',
-    '#RoadFury': 'Mad Max',
-    '@MadMax4FuryRoad': 'Mad Max',
-    '#TheMartian': 'Martian',
-    '@MartianMovie': 'Martian',
-    '#BrooklynMovie': 'Brooklyn',
-    '#roommovie': 'Room',
-    '@RoomTheMovie': 'Room',
-    '#SpotlightMovie': 'Spotlight',
-    '@SpotlightMovie': 'Spotlight',
-    '#BridgeOfSpies': 'Bridge Of Spies',
-    '@BridgeofSpies': 'Bridge Of Spies',
-    '#BigShort': 'Big Short',
-    '@thebigshort': 'Big Short',
-    '#TheBigShort': 'Big Short'
-};
-var movies = ['Revenant', 'Mad Max', 'Martian', 'Brooklyn', 'Room', 'Spotlight', 'Bridge Of Spies', 'Big Short']
+var movies_dict = require('../helpers/movies_dictionary');
+
+var movies_hashtags = movies_dict.movies_hashtags;
+var movies = movies_dict.movies;
 
 
 module.exports = function(twitter, models){

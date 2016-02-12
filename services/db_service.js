@@ -3,7 +3,10 @@
  */
 module.exports = function (db, io) {
   var r = db.r;
-  var movies = ['Revenant', 'Mad Max', 'Martian', 'Brooklyn', 'Room', 'Spotlight', 'Bridge Of Spies', 'Big Short'];
+  var movies_dictionary = require('../helpers/movies_dictionary');
+
+  var movies = movies_dictionary.movies;
+  var movie_labels = movies_dictionary.movies_labels;
 
   var toTime = function (h, m) {
     return ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2)
@@ -92,10 +95,10 @@ module.exports = function (db, io) {
   function getAllTweetsBefore(minutes) {
     var seconds = minutes * 60;
     return r.table('Tweet')
-        .orderBy({index: 'created_at'})
         .filter(function (tweet) {
           return r.now().sub(seconds).gt(tweet('created_at'));
         })
+        .orderBy({index: 'created_at'})
         .concatMap(function (tweet) {
           return tweet('movies').map(function (title) {
             return {
@@ -228,6 +231,9 @@ module.exports = function (db, io) {
 
   }
 
+  function sendKeys(socket){
+    socket.emit('structure',movie_labels)
+  }
 
   db.conn.then(function (conn) {
 
@@ -237,6 +243,7 @@ module.exports = function (db, io) {
       listenForChanges(conn, sendCountersToActiveSockets);
 
       io.on('connection', function (socket) {
+        sendKeys(socket);
         sendCache(socket);
         sockets.push(socket);
         socket.on('disconnect', function (socket) {
