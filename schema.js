@@ -7,7 +7,6 @@ var thinky = require('thinky')(
 var errors = thinky.Errors;
 var r = thinky.r
 
-
 var Tweet = thinky.createModel("Tweet", {
     id: Number,
     text: String,

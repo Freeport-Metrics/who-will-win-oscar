@@ -19,84 +19,72 @@ angular.module('whoWillWinOscars.controllers')
       $scope.initialized = false;
       $scope.tweetCount = {}
       $scope.counters = [];
-      $scope.preparedAggregatedData = {
-        'Big Short': [],
-        'Brooklyn': [],
-        'Room': [],
-        'Mad Max': [],
-        'Spotlight': [],
-        'Revenant': [],
-        'Bridge Of Spies': [],
-        'Martian': [],
-        'time': []
-      }
+      $scope.preparedAggregatedData = {};
+      $scope.preparedNotAggregatedData = {};
 
-      $scope.movieLabels = {
-        'Big Short': 'The Big Short',
-        'Brooklyn': 'Brooklyn',
-        'Room': 'Room',
-        'Mad Max': 'Mad Max: Fury Road',
-        'Spotlight': 'Spotlight',
-        'Revenant': 'The Revenant',
-        'Bridge Of Spies': 'Bridge Of Spies',
-        'Martian': 'The Martian',
-      }
-
-      $scope.preparedNotAggregatedData = angular.copy($scope.preparedAggregatedData);
-
-      $scope.chartConfig = {
-        bindto: '#aggregated_chart',
-        data: {
-          x: 'time',
-          xFormat: '%H:%M',
-          json: $scope.preparedAggregatedData,
-          type: 'spline',
-          colors: {
-            'Revenant': '69788C',
-            'Martian': 'AA5A28',
-            'Bridge Of Spies': '821E1E',
-            'Spotlight': 'DCDCDC',
-            'Mad Max': 'E1BE32',
-            'Room': '648CAA',
-            'Brooklyn': '87A096',
-            'Big Short': '82643C',
-          }
-        },
-        tooltip: {
-          show: false,
-          //contents: function (d, defaultTitleFormat, defaultValueFormat, color) {
-          //  return "<div class='tweet'>Tooltip</div>"
-          //}
-        },
-        point: {
-          show: false
-        },
-        legend: {
-          show: false
-        },
-        axis:{
-          x: {
-            type: 'timeseries',
-            tick: {
-              format: '%H:%M'
-            }
-          },
-          y: {
-            show:false
-          },
-          y2: {
-            show: true
-          }
-        }
-      }
-      $scope.aggregatedChart = c3.generate($scope.chartConfig);
-      $scope.chartConfig['bindto'] = '#not_aggregated_chart';
-      $scope.chartConfig['data']['json'] = $scope.preparedNotAggregatedData;
-      $scope.nonAggregatedChart = c3.generate($scope.chartConfig);
+      $scope.movieLabels = {}
 
       $scope.socket.on("connect", function(socket){
         console.log("client connected to server");
       });
+
+      $scope.socket.on("structure", function(data){
+        $scope.$apply(function(){
+          $scope.chartConfig = {
+            bindto: '#aggregated_chart',
+            data: {
+              x: 'time',
+              xFormat: '%H:%M',
+              json: $scope.preparedAggregatedData,
+              type: 'spline',
+              colors: {}
+            },
+            tooltip: {
+              show: false,
+              //contents: function (d, defaultTitleFormat, defaultValueFormat, color) {
+              //  return "<div class='tweet'>Tooltip</div>"
+              //}
+            },
+            point: {
+              show: false
+            },
+            legend: {
+              show: false
+            },
+            axis:{
+              x: {
+                type: 'timeseries',
+                tick: {
+                  format: '%H:%M'
+                }
+              },
+              y: {
+                show: false,
+                padding: {bottom:10}
+              },
+              y2: {
+                show: true
+              }
+            }
+          }
+          var index = 0;
+          angular.forEach(data.labels, function(value, key){
+            $scope.movieLabels[key] = value;
+            $scope.chartConfig['data']['colors'][key] = data.colors[key];
+            $scope.preparedAggregatedData[key] = [];
+            index = index + 1;
+          })
+          $scope.preparedAggregatedData['time'] = []
+          $scope.preparedNotAggregatedData = angular.copy($scope.preparedAggregatedData);
+
+          /* Generating charts */
+
+          $scope.aggregatedChart = c3.generate($scope.chartConfig);
+          $scope.chartConfig['bindto'] = '#not_aggregated_chart';
+          $scope.chartConfig['data']['json'] = $scope.preparedNotAggregatedData;
+          $scope.nonAggregatedChart = c3.generate($scope.chartConfig);
+        })
+      })
 
       $scope.socket.on("disconnect", function(socket){
         console.log("client disconnected from server");
@@ -186,8 +174,10 @@ angular.module('whoWillWinOscars.controllers')
             chartData['time'].unshift(current_time);
             chartData['time'].pop();
             angular.forEach(chartData, function(value, key){
-              value.pop();
-              value.unshift(value[0]);
+              if(key != 'time'){
+                value.pop();
+                value.unshift(value[0]);
+              }
             });
             chart.load({
               json: chartData
