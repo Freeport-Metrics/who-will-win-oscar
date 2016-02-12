@@ -4,7 +4,6 @@
 module.exports = function (db, io) {
   var r = db.r;
   var movies_dictionary = require('../helpers/movies_dictionary');
-
   var movies = movies_dictionary.movies;
   var movie_labels = movies_dictionary.movies_labels;
   var movie_colors = movies_dictionary.movies_colors;
@@ -25,7 +24,7 @@ module.exports = function (db, io) {
 
     for (var i = 0; i < minutesAgo; i++) {
       var counter = {};
-      counter[toTime(h, m--)] = initialValues ? initialValues : movies.reduce(function (obj, val) {
+      counter[toTime(h, m--)] = initialValues ? JSON.parse(JSON.stringify(initialValues)) : movies.reduce(function (obj, val) {
         obj[val] = 0;
         return obj;
       }, {});
@@ -78,7 +77,7 @@ module.exports = function (db, io) {
     return r.table('Tweet')
         .orderBy({index: 'created_at'})
         .filter(function (tweet) {
-          return r.now().sub(seconds).gt(tweet('created_at'));
+          return r.now().sub(tweet('created_at')).lt(seconds);
         })
         .filter(r.row('movies').contains(function (movie){
           return r.expr(movies).contains(movie);
