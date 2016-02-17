@@ -5,7 +5,7 @@ var twitter = require('../config/twitter.js');
 var movies_dictionary = require('../helpers/movies_dictionary');
 var models = require('../schema');
 var urlgrey = require('urlgrey');
-var url = urlgrey("https://user:pass@subdomain.asdf.com/path/kid?asdf=1234#frag")
+var url = urlgrey();
 Object.keys(movies_dictionary.movies_hashtags).forEach(function(keyword) {
   console.log('Looking for: '+keyword);
   twitter.get('search/tweets', {q: url.encode(keyword),count: 1000}, function(error, tweets, response){
