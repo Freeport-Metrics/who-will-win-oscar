@@ -184,7 +184,8 @@ module.exports = function (db, io) {
         date: row('new_val')('created_at'),
         text: row('new_val')('text'),
         is_new: row('old_val').eq(null),
-        movies: row('new_val')('movies')
+        movies: row('new_val')('movies'),
+        sentiment: row('new_val')('sentiment')
       };
     }).run(conn, function (err, cursor) {
       cursor.each(function (err, row) {
