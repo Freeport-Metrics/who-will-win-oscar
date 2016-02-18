@@ -20,4 +20,8 @@ module.exports = function(app, dir){
   app.use('/css', express.static(dir + '/node_modules/epoch-charting/dist/css/'));
   app.use('/css', express.static(dir + '/node_modules/bootstrap/dist/css/'));
   app.use(express.static(path.join(dir, 'public')));
+
+  // older node back-compatibility paths, older npm doesn't flatten nested modules
+  app.use('/js', express.static(dir + '/node_modules/socket.io/node_modules/socket.io-client/'));
+  app.use('/js', express.static(dir + '/node_modules/c3/node_modules/d3/'));
 }
