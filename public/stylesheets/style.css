@@ -168,7 +168,8 @@ a {
 }
 
 .tweet-container{
-  min-height: 200px;
+  min-height: 250px;
+  font-size: 15px;
 }
 
 .text-container{
