@@ -2,10 +2,14 @@
  * Created by Matuszewski on 04/02/16.
  */
 var thinky = require('thinky')(
-    {db:'who_will_win_oscars'} // Config
+    {
+      host: process.env.RETHINK_HOST,
+      db: process.env.RETHINK_DB_NAME,
+      authKey: process.env.RETHINK_AUTH_KEY
+    }
 );
 var errors = thinky.Errors;
-var r = thinky.r
+var r = thinky.r;
 
 var Tweet = thinky.createModel("Tweet", {
     id: Number,
@@ -27,7 +31,7 @@ var User = thinky.createModel('User', {
     description: String,
     created_at: String,
     lang: String,
-    profile_image_url: String,
+    profile_image_url: String
 });
 
 Tweet.belongsTo(User, 'user', 'userId', 'id');
@@ -35,8 +39,10 @@ User.hasMany(Tweet, 'tweets', 'id', 'userId');
 
 Tweet.ensureIndex('created_at');
 
+
 module.exports = {
     errors: errors,
     tweet: require('./models/Tweet')(r, Tweet),
-    user: require('./models/User')(r, User)
+    user: require('./models/User')(r, User),
+    r: r
 };

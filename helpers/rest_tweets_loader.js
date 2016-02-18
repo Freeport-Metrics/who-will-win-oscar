@@ -1,5 +1,3 @@
-var db = require('../config/db');
-var r = db.r;
 require('dotenv').config();
 var twitter = require('../config/twitter.js');
 var movies_dictionary = require('../helpers/movies_dictionary');

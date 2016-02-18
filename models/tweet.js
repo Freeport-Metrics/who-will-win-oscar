@@ -7,6 +7,10 @@ module.exports = function(r, model){
 
   return {
 
+    model: function(){
+      return Tweet;
+    },
+
     update: function(params){
       return Tweet.merge(params).save();
     },
@@ -18,6 +22,10 @@ module.exports = function(r, model){
     create: function(params){
       var tweet  = new Tweet(params)
       return tweet.saveAll({user:true});
+    },
+
+    changes: function(){
+      return Tweet.changes();
     }
   }
 }

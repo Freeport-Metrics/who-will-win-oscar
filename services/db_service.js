@@ -1,8 +1,9 @@
 /**
  * Created by Matuszewski on 04/02/16.
  */
-module.exports = function (db, io) {
-  var r = db.r;
+module.exports = function (schema, io) {
+  var schema = schema;
+  var r = schema.r;
   var movies_dictionary = require('../helpers/movies_dictionary');
   var movies = movies_dictionary.movies;
   var movie_labels = movies_dictionary.movies_labels;
@@ -40,7 +41,6 @@ module.exports = function (db, io) {
 
   var aggregatedCache = null;
   var tempCache = null;
-  var cacheCapacity = 60;
 
   function updateCache(row, cache, isAggregated) {
     var time = toTime(row.hour, row.minute);
@@ -79,7 +79,7 @@ module.exports = function (db, io) {
         .filter(function (tweet) {
           return r.now().sub(tweet('created_at')).lt(seconds);
         })
-        .filter(r.row('movies').contains(function (movie){
+        .filter(r.row('movies').contains(function (movie) {
           return r.expr(movies).contains(movie);
         }))
         .concatMap(function (tweet) {
@@ -102,7 +102,7 @@ module.exports = function (db, io) {
         .filter(function (tweet) {
           return r.now().sub(seconds).gt(tweet('created_at'));
         })
-        .filter(r.row('movies').contains(function (movie){
+        .filter(r.row('movies').contains(function (movie) {
           return r.expr(movies).contains(movie);
         }))
         .concatMap(function (tweet) {
@@ -117,53 +117,40 @@ module.exports = function (db, io) {
         }).count();
   }
 
-  function initialize(conn, callback) {
-    getTweetCountPerMinuteFrom(60).run(conn, function (err, cursor) {
-      if (err) throw err;
-      var aggregated_result = initialResult();
-      var result = initialResult();
-      cursor.each(
-          function (err, row) {
-            if (err) throw err;
-            var title = row['group'].splice(0, 1)[0];
-            var h = row['group'][0];
-            var m = row['group'][1];
-            var time = toTime(h, m);
-
-
-            result.forEach(function (counter) {
-              if (counter[time]) {
-                counter[time][title] = row.reduction;
-                return false;
-              }
-            });
-            aggregated_result.forEach(function (counter) {
-              var key = Object.keys(counter)[0];
-              if (key == time || key > time) {
-                counter[key][title] += row.reduction;
-              }
-            });
-          }, function () {
-            getAllTweetsBefore(60).run(conn, function (err, cursor) {
-              if (err) throw err;
-              cursor.each(function (err, row) {
-                    if (err) throw err;
-                    aggregated_result.forEach(function (counter) {
-                      counter[Object.keys(counter)[0]][row['group']] += row['reduction'];
-                    });
-                  }
-                  , function () {
-
-                    aggregatedCache = aggregated_result;
-                    tempCache = result;
-                    if (callback) {
-                      callback();
-                    }
-                  });
-
-
-            });
-          })
+  function initialize(callback) {
+    var aggregated_result = initialResult();
+    var result = initialResult();
+    tempCache = result;
+    getTweetCountPerMinuteFrom(60).run().then(function (rows) {
+      rows.forEach(function (row) {
+        var title = row['group'].splice(0, 1)[0];
+        var h = row['group'][0];
+        var m = row['group'][1];
+        var time = toTime(h, m);
+        result.forEach(function (counter) {
+          if (counter[time]) {
+            counter[time][title] = row.reduction;
+            return false;
+          }
+        });
+        aggregated_result.forEach(function (counter) {
+          var key = Object.keys(counter)[0];
+          if (key == time || key > time) {
+            counter[key][title] += row.reduction;
+          }
+        });
+      });
+      getAllTweetsBefore(60).run().then(function (rows) {
+        rows.forEach(function (row) {
+          aggregated_result.forEach(function (counter) {
+            counter[Object.keys(counter)[0]][row['group']] += row['reduction'];
+          });
+        });
+        aggregatedCache = aggregated_result;
+        if (callback) {
+          callback();
+        }
+      });
     });
   }
 
@@ -172,39 +159,26 @@ module.exports = function (db, io) {
     socket.emit('initialize_tweet_not_aggregated', tempCache);
   }
 
-  function listenForChanges(conn, callback) {
-    db.r.table('Tweet').changes(
-        {
-          squash: true
-        }
-    ).map(function (row) {
-      return {
-        hour: row('new_val')('created_at').hours(),
-        minute: row('new_val')('created_at').minutes(),
-        date: row('new_val')('created_at'),
-        text: row('new_val')('text'),
-        is_new: row('old_val').eq(null),
-        movies: row('new_val')('movies'),
-        sentiment: row('new_val')('sentiment')
-      };
-    }).run(conn, function (err, cursor) {
-      cursor.each(function (err, row) {
-        if (err) {
-          throw err;
-        }
+  function listenForChanges(callback) {
 
-
-        if (!row.is_new) {
-          return;
+    schema.tweet.changes().then(function (feed) {
+      feed.each(function (error, doc) {
+        if (doc.getOldValue()) {
+          return
         }
-        var lastCounterAggregated = updateCache(row, aggregatedCache, true);
-        var lastCounter = updateCache(row, tempCache, false);
+        var mappedRow = {
+          hour: doc['created_at'].getHours(),
+          minute: doc['created_at'].getMinutes(),
+          date: doc['created_at'],
+          text: doc['text'],
+          movies: doc['movies'],
+          sentiment: doc['sentiment']
+        };
+        var lastCounterAggregated = updateCache(mappedRow, aggregatedCache, true);
+        var lastCounter = updateCache(mappedRow, tempCache, false);
         if (callback) {
-          callback(row, lastCounter, lastCounterAggregated);
+          callback(mappedRow, lastCounter, lastCounterAggregated);
         }
-
-      }, function () {
-        // finished processing
       });
     });
   }
@@ -238,29 +212,30 @@ module.exports = function (db, io) {
 
   }
 
-  function sendKeys(socket){
-    socket.emit('structure',{labels: movie_labels, colors: movie_colors})
+  function sendKeys(socket) {
+    socket.emit('structure', {labels: movie_labels, colors: movie_colors})
   }
 
-  db.conn.then(function (conn) {
+  // We need to wait for model to initialise, otherwise we got concurrency problem
+  // This is probably not documented but we found it based on the source code
+  schema.tweet.model().ready().then(function () {
+    console.log('Schema created, starting processing');
+    initialize(function () {
 
-    initialize(conn, function () {
-
-      var sockets = [];
-      listenForChanges(conn, sendCountersToActiveSockets);
+      listenForChanges(sendCountersToActiveSockets);
 
       io.on('connection', function (socket) {
+        console.log('Socket connected');
         sendKeys(socket);
         sendCache(socket);
-        sockets.push(socket);
         socket.on('disconnect', function (socket) {
 
         })
       });
     });
-
-
   })
+
+
 };
 
 

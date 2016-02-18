@@ -14,9 +14,9 @@ Real time analytics trying to predict oscar winners
 
 4. Run
   - rethinkdb
-  - npm start -p 3000
+  - npm start
   
 5. Open
 
-  - app: ???
+  - app: http://localhost:3000/
   - rethinkdb panel: http://localhost:8080/
