@@ -8,7 +8,7 @@ angular.module('whoWillWinOscars.controllers')
         $timeout,
         $filter
     ){
-      $scope.socket = io.connect(location.protocol+'//'+location.hostname + ':3001', {
+      $scope.socket = io.connect(window.location.href , {
         multiplex: false
       });
       $scope.tweets = [];

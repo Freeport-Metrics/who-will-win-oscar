@@ -4,7 +4,9 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+var app_and_server = require('../app');
+var server = app_and_server.server;
+var app = app_and_server.app;
 var debug = require('debug')('who_will_win_oscars:server');
 var http = require('http');
 
@@ -14,12 +16,6 @@ var http = require('http');
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
