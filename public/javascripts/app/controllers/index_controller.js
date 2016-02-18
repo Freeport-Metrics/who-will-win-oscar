@@ -8,7 +8,7 @@ angular.module('whoWillWinOscars.controllers')
         $timeout,
         $filter
     ){
-      $scope.socket = io.connect('http://localhost:3001', {
+      $scope.socket = io.connect(location.protocol+'//'+location.hostname + ':3001', {
         multiplex: false
       });
       $scope.tweets = [];
@@ -40,10 +40,7 @@ angular.module('whoWillWinOscars.controllers')
               colors: {}
             },
             tooltip: {
-              show: false,
-              //contents: function (d, defaultTitleFormat, defaultValueFormat, color) {
-              //  return "<div class='tweet'>Tooltip</div>"
-              //}
+              show: false
             },
             point: {
               show: false
