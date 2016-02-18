@@ -62,13 +62,13 @@ module.exports = {
     'Martian': 'The Martian'
   },
   movies_colors: {
-    'Revenant': '69788C',
-    'Martian': 'AA5A28',
-    'Bridge Of Spies': '821E1E',
-    'Spotlight': 'DCDCDC',
-    'Mad Max': 'E1BE32',
-    'Room': '648CAA',
-    'Brooklyn': '87A096',
-    'Big Short': '82643C',
+    'Revenant': '#69788C',
+    'Martian': '#AA5A28',
+    'Bridge Of Spies': '#821E1E',
+    'Spotlight': '#DCDCDC',
+    'Mad Max': '#E1BE32',
+    'Room': '#648CAA',
+    'Brooklyn': '#87A096',
+    'Big Short': '#82643C'
   }
-}
+};

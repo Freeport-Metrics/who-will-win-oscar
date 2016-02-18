@@ -45,3 +45,16 @@
     -webkit-text-fill-color: transparent;
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3e2c7 ', endColorstr='#e9d4b3 ',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
+
+@-moz-document url-prefix() {
+    .icon-laurel-left:before {
+        background: transparent !important;
+        color: #b68d4c !important;
+    }
+    .icon-laurel-right:before{
+        content:'\0041';
+        font-size: 600%;
+        background: transparent !important;
+        color: #b68d4c !important;
+    }
+}

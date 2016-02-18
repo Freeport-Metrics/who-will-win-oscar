@@ -246,6 +246,12 @@ h1.gold{
   -webkit-text-fill-color: transparent;
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3e2c7 ', endColorstr='#e9d4b3 ',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
+@-moz-document url-prefix() {
+  h1.gold {
+    background: transparent !important;
+    color: #b68d4c !important;
+  }
+}
 
 .laurel-wrapper{
   width: 200px;
