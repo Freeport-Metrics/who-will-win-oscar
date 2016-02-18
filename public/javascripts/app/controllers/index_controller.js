@@ -82,8 +82,6 @@ angular.module('whoWillWinOscars.controllers')
           $scope.aggregatedChart = c3.generate($scope.chartConfig);
           $scope.chartConfig['bindto'] = '#not_aggregated_chart';
           $scope.chartConfig['data']['json'] = $scope.preparedNotAggregatedData;
-          $scope.chartConfig['data']['xFormat'] = '%H:%M:%S';
-          $scope.chartConfig['axis']['x']['tick']['format'] = '%H:%M:%S';
           $scope.nonAggregatedChart = c3.generate($scope.chartConfig);
         })
       })
@@ -119,8 +117,8 @@ angular.module('whoWillWinOscars.controllers')
       })
 
       $scope.socket.on('initialize_tweet_not_aggregated', function(data){
-        $scope.prepareNonAggChart(data);
-        $scope.updateNonAggChart($scope.nonAggregatedChart, $scope.preparedNotAggregatedData, 'newValNonAgg');
+        $scope.prepareChart($scope.nonAggregatedChart, data, $scope.preparedNotAggregatedData);
+        $scope.updateChart($scope.nonAggregatedChart, $scope.preparedNotAggregatedData, 'newValNonAgg', false);
       })
 
       $scope.socket.on('new_tweets_aggregates', function(data){
@@ -134,9 +132,7 @@ angular.module('whoWillWinOscars.controllers')
       $scope.applyClass = applyClass;
       $scope.applyHighlight = applyHighlight;
       $scope.prepareChart = prepareChart;
-      $scope.prepareNonAggChart = prepareNonAggChart
       $scope.updateChart = updateChart;
-      $scope.updateNonAggChart = updateNonAggChart;
       $scope.updateCounters = updateCounters;
 
       function applyHighlight(index){
@@ -158,15 +154,9 @@ angular.module('whoWillWinOscars.controllers')
             chartData[key].push(val);
           })
         })
-      }
-
-      function prepareNonAggChart(data){
-        var key = Object.keys(data[0])[0]
-        angular.forEach(data[0][key], function(value, valkey){
-          $scope.preparedNotAggregatedData[valkey].push(value);
-        })
-        var date = new Date();
-        $scope.preparedNotAggregatedData['time'].unshift(d3.time.format("%H:%M:%S")(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds())));
+        chart.load({
+          json: chartData
+        });
       }
 
       function updateChart(chart, chartData, newValListener, updateCounters){
@@ -215,34 +205,6 @@ angular.module('whoWillWinOscars.controllers')
             $scope[newValListener] = null;
           }
         }, 1000)
-      }
-
-      function updateNonAggChart(chart, chartData, newValListener){
-        $interval(function(){
-          var date = new Date();
-          chartData['time'].unshift(d3.time.format("%H:%M:%S")(new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds())));
-          if(chartData['time'].length > 59){
-            chartData['time'].pop();
-          }
-          angular.forEach(chartData, function(value, key){
-            if(key != 'time'){
-              value.unshift(0);
-              if(value.length > 59){
-                value.pop();
-              }
-            }
-          });
-          if($scope[newValListener]){
-            var counter_key = Object.keys($scope[newValListener])[0]
-            angular.forEach($scope[newValListener][counter_key], function(newValue, key){
-              chartData[key][0] = newValue;
-            })
-            $scope[newValListener] = null;
-          }
-          chart.load({
-            json: chartData
-          });
-        }, 1000);
       }
 
       function updateCounters(data){
