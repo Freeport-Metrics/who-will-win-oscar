@@ -42,7 +42,7 @@ Tweet.ensureIndex('created_at');
 
 module.exports = {
     errors: errors,
-    tweet: require('./models/Tweet')(r, Tweet),
-    user: require('./models/User')(r, User),
+    tweet: require(__dirname  + '/models/Tweet')(r, Tweet),
+    user: require(__dirname +'/models/User')(r, User),
     r: r
 };
