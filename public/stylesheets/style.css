@@ -6,14 +6,14 @@ body {
 }
 
 h1{
-  font-size: 800%;
+  font-size: 700%;
   margin-top: 30px;
   margin-bottom: 0px;
   font-family: "Josefin Sans";
 }
 
 a {
-  color: #00B7FF;
+  color: #b68d4c;
 }
 
 .social-button {
@@ -50,6 +50,12 @@ a {
   background: -webkit-linear-gradient(left, rgba(36, 36, 36,1) 5%,rgba(36, 36, 36,0.7) 50%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
   background: linear-gradient(to right, rgba(36, 36, 36,1) 5%, rgba(36, 36, 36 ,0.7) 50%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=1 ); /* IE6-9 */
+}
+
+.chart-caption {
+  position: absolute ;
+  width: 33%;
+  z-index: 1000;
 }
 
 .tweet-mask{
@@ -255,7 +261,7 @@ a {
   transition: all .3s ease .15s;
 }
 
-h1.gold{
+.gold{
   background: #f3e2c7 ; /* Old browsers */
   background: -moz-linear-gradient(-45deg, #f3e2c7  0%, #c19e67  50%, #b68d4c  51%, #e9d4b3  100%); /* FF3.6-15 */
   background: -webkit-linear-gradient(-45deg, #f3e2c7  0%,#c19e67  50%,#b68d4c  51%,#e9d4b3  100%); /* Chrome10-25,Safari5.1-6 */
@@ -265,7 +271,7 @@ h1.gold{
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3e2c7 ', endColorstr='#e9d4b3 ',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 @-moz-document url-prefix() {
-  h1.gold {
+  .gold {
     background: transparent !important;
     color: #b68d4c !important;
   }
@@ -276,6 +282,7 @@ h1.gold{
   height: 130px;
   display: inline-block;
   position: relative;
+  margin-left: -40px;
 }
 
 .laurel-text{

@@ -37,13 +37,13 @@ block content
                 script( type="IN/Share" data-url="http://www.bestpicture2016.freeportmetrics.com%20" data-counter="right")
               div(class="social-button")
                a(class="github-button" href="https://github.com/Freeport-Metrics/who-will-win-oscar" data-count-href="/Freeport-Metrics/who-will-win-oscar/stargazers" data-count-api="/repos/Freeport-Metrics/who-will-win-oscar#stargazers_count" data-count-aria-label="# stargazers on GitHub" aria-label="Star Freeport-Metrics/who-will-win-oscar on GitHub") Star
-      div(class='row section ')
-          div(class='col-xs-12 text-center section-description')
-              div(class='text-container')
-                strong(class="color-white") According to Twitter Users
-                p(class="no-margin text-color") We measure Twitter buzz in real time counting twits containing the movietitle keyword
+        div(class='row section')
+            div(class="col-xs-8 col-sm-8 col-md-4")
+                p(class="color-white").
+                    #[b Chart 1. Aggregated Number of Twits Per Movie]
+                    This numbers represent twits per each movie aggregated since Feb 18th. We count all twits that contain a movie hashtag, twit at official movie profile or mention names of the cast.
       div(class='row section  text-center')
-          div(class="col-xs-4 col-md-2 col-lg-1" ng-repeat="counter in counters")
+          div(class="col-xs-8 col-sm-4 col-md-2 col-lg-1" ng-repeat="counter in counters")
               div(class="laurel-wrapper {{applyClass(counter.name)}}")
                   i( class="laurel icon-laurel-left")
                   span(class="laurel-text-tweet")
@@ -51,10 +51,7 @@ block content
                   span(class="laurel-text" ng-bind="movieLabels[counter.name]")
                   span(class="laurel-text-counter" ng-bind="counter.value")
                   i( class="laurel icon-laurel-right")
-      div(class='row section')
-          p(class="color-white").
-              #[b Chart 1. Aggregated Number of Twits Per Movie]
-              This numbers represent twits per each movie aggregated since Feb 18th. We count all twits that contain a movie hashtag, twit at official movie profile or mention names of the cast.
+
       div(class='row section')
         div(class='col-xs-12 text-center tweet-container')
             div(class='text-container')
@@ -64,36 +61,38 @@ block content
                         p(ng-bind-html="tweet.text")
                         p(ng-bind="'Sentiment Score: '+tweet.sentiment.score" ng-class="{'green':(tweet.sentiment.score > 0),'red': tweet.sentiment.score < 0, 'blue': tweet.sentiment.score == 0}")
 
+    div(class="row")
+      div(class='col-xs-12')
+        p(class="color-white chart-caption").
+              #[b Chart 2. Buzz Trend Line in Time]
+              This chart shows how number of twits per movie grows in real time. The chart displays data from the last hour
+        div(class='overlay-mask')
+        div(id="aggregated_chart" )
 
-      div(class="row")
-          div(class='col-xs-12')
-           div(class='overlay-mask')
-           div(id="aggregated_chart" )
-           p(class="color-white" ).
-               #[b Chart 2. Buzz Trend Line in Time]
-               This chart shows how number of twits per movie grows in real time. The chart displays data from the last hour
-      div(class="row")
-          div(class="col-xs-12")
-               div(class='overlay-mask')
-               div(id="not_aggregated_chart" style="height: 500px;")
-               p(class="color-white" style="margin-bottom: 50px;").
-                   #[b Chart 3. Twits Per Minute]
-                   This chart show twits per minute for each movie. The data shows in detail how popular is a movie in a short period of time. It’ll be interesting on the Oscars Night!
-      div(class="row")
-          div(class="col-xs-12")
-              article(class="color-white")
+    div(class="row" style="margin-top: 75px;")
+        div(class="col-xs-12")
+            p(class="color-white chart-caption" ).
+                #[b Chart 3. Twits Per Minute]
+                This chart show twits per minute for each movie. The data shows in detail how popular is a movie in a short period of time. It’ll be interesting on the Oscars Night!
+            div(class='overlay-mask')
+            div(id="not_aggregated_chart" style="height: 500px;")
+
+    div(class="row")
+        div(class="col-xs-12")
+            article(class="color-white")
                 h2 About the Project
-                p(class="color-white") We created this real time Twitter buzz meter as a side project of our company Freeport Metrics. The challenge was to figure out who will win the best picture Oscar 2016. We wanted to make it real time to track changes in time, the closer to the Oscars, the better. First we brainstormed different methods of predicting the winner:
+                p(class="color-white").
+                    We created this real time Twitter buzz meter as a side project of our company #[a(href="http://www.freeportmetrics.com") Freeport Metrics]. The challenge was to figure out who will win the best picture #[a(href="http://www.oscars.org") Oscar 2016]. We wanted to make it real time to track changes in time, the closer to the Oscars, the better. First we brainstormed different methods of predicting the winner:
                 ul(class="color-white")
                     li measuring how changes the bookmakers’ score
                     li creating a free market prediction model where people buy movie stock
                     li mapping how connected are the members of the Academy with the nominees
                     li measuring the buzz on Twitter in real time
-                p The Twitter buzz meter turned out to be the most interesting from the technological point of view: a lot of data! We use Node.js server to retrieve twits that contain previously defined # and @ from the Twitter Stream API. For the database we use Rethink.db to store all the data. Is our solution scalable? Well, yes. We update the counters on the fly to avoid our servers to explode :)
+                p The Twitter buzz meter turned out to be the most interesting from the technological point of view: a lot of data! We use #[a(href="http://www.nodejs.org") Node.js] server to retrieve twits that contain previously defined # and @ from the Twitter Stream API. For the database we use #[a(href="http://www.rethinkdb.com") RethinkDB] to store all the data. Is our solution scalable? Well, yes. We update the counters on the fly to avoid our servers to explode :)
                 p(class="m-b-lg").
-                    On the front-end we used Socket.IO to get data streamed from the server instead of making queries each time. For drawing charts we used C3 & D3 libraries. That’s the whole magic!
+                    On the front-end we used #[a(href="http://www.socket.io") Socket.IO] to get data streamed from the server instead of making queries each time. For drawing charts we used #[a(href="http://c3js.org/") C3] library. That’s the whole magic!
 
-      footer(class="color-white")
-        div(class="m-t-lg") Made by
-          a( href="http://www.freeportmetrics.com")
-            img(src="/img/FM-Logo-White.png" height="20" alt=" Freeport Metrics" class="m-l-sm")
+  footer(class="color-white")
+    div(class="m-t-lg") Made by
+      a( href="http://www.freeportmetrics.com")
+        img(src="/img/FM-Logo-White.png" height="20" alt=" Freeport Metrics" class="m-l-sm")
