@@ -39,8 +39,8 @@ block content
         div(class='row section')
             div(class="col-xs-8 col-sm-8 col-md-4")
                 p(class="color-white").
-                    #[strong Chart 1. Aggregated Number of Twits Per Movie]#[br]
-                    This numbers represent twits per each movie aggregated since Feb 18th. We count all twits that contain a movie hashtag, twit at official movie profile or mention names of the cast.
+                    #[strong Chart 1. Aggregated Number of Tweets Per Movie]#[br]
+                    This numbers represent tweets per each movie aggregated since Feb 18th. We count all tweets that contain a movie hashtag, tweet at official movie profile or mention names of the cast.
       div(class='row section  text-center')
           div(class="col-xs-8 col-sm-4 col-md-2 col-lg-1" ng-repeat="counter in counters")
               div(class="laurel-wrapper {{applyClass(counter.name)}}")
@@ -64,15 +64,15 @@ block content
       div(class='col-xs-12')
         p(class="color-white chart-caption").
               #[strong Chart 2. Buzz Trend Line in Time]#[br]
-              This chart shows how number of twits per movie grows in real time. The chart displays data from the last hour
+              This chart shows how number of tweets per movie grows in real time. The chart displays data from the last hour
         div(class='overlay-mask')
         div(id="aggregated_chart" )
 
     div(class="row" style="margin-top: 75px;")
         div(class="col-xs-12")
             p(class="color-white chart-caption" ).
-                #[strong Chart 3. Twits Per Minute]#[br]
-                This chart show twits per minute for each movie. The data shows in detail how popular is a movie in a short period of time. It’ll be interesting on the Oscars Night!
+                #[strong Chart 3. Tweets Per Minute]#[br]
+                This chart show tweets per minute for each movie. The data shows in detail how popular is a movie in a short period of time. It’ll be interesting on the Oscars Night!
             div(class='overlay-mask')
             div(id="not_aggregated_chart" style="height: 500px;")
 
@@ -87,7 +87,7 @@ block content
                     li creating a free market prediction model where people buy movie stock
                     li mapping how connected are the members of the Academy with the nominees
                     li measuring the buzz on Twitter in real time
-                p The Twitter buzz meter turned out to be the most interesting from the technological point of view: a lot of data! We use #[a(href="http://www.nodejs.org") Node.js] server to retrieve twits that contain previously defined # and @ from the #[a(href="https://dev.twitter.com/streaming/overview") Twitter Stream API]. For the database we use #[a(href="http://www.rethinkdb.com") RethinkDB] to store all the data. Is our solution scalable? Well, yes. We update the counters on the fly to avoid our servers to explode :)
+                p The Twitter buzz meter turned out to be the most interesting from the technological point of view: a lot of data! We use #[a(href="http://www.nodejs.org") Node.js] server to retrieve tweets that contain previously defined # and @ from the #[a(href="https://dev.twitter.com/streaming/overview") Twitter Stream API]. For the database we use #[a(href="http://www.rethinkdb.com") RethinkDB] to store all the data. Is our solution scalable? Well, yes. We update the counters on the fly to avoid our servers to explode :)
                 p(class="m-b-lg").
                     On the front-end we used #[a(href="http://www.socket.io") Socket.IO] to get data streamed from the server instead of making queries each time. For drawing charts we used #[a(href="http://c3js.org/") C3] library. That’s the whole magic!
 
