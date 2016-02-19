@@ -54,8 +54,14 @@ a {
 
 .chart-caption {
   position: absolute ;
-  width: 33%;
   z-index: 1000;
+}
+
+@media (min-width: 768px) {
+  .chart-caption{
+    width: 33%;
+  }
+
 }
 
 .tweet-mask{
@@ -196,10 +202,8 @@ a {
 }
 
 .text-container{
-  min-height: 50px;
   margin-bottom: 10px;
   display: inline-block;
-  width: 50%;
 }
 
 .tweet{
