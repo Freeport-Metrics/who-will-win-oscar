@@ -67,16 +67,18 @@ block content
 
       div(class="row")
           div(class='col-xs-12')
-
            div(class='overlay-mask')
-            div(id="aggregated_chart" style="height: 500px;")
+           div(id="aggregated_chart" )
            p(class="color-white" ).
                #[b Chart 2. Buzz Trend Line in Time]
                This chart shows how number of twits per movie grows in real time. The chart displays data from the last hour
-           div(id="not_aggregated_chart" style="height: 500px;")
-           p(class="color-white" style="margin-bottom: 50px;").
-               #[b Chart 3. Twits Per Minute]
-               This chart show twits per minute for each movie. The data shows in detail how popular is a movie in a short period of time. It’ll be interesting on the Oscars Night!
+      div(class="row")
+          div(class="col-xs-12")
+               div(class='overlay-mask')
+               div(id="not_aggregated_chart" style="height: 500px;")
+               p(class="color-white" style="margin-bottom: 50px;").
+                   #[b Chart 3. Twits Per Minute]
+                   This chart show twits per minute for each movie. The data shows in detail how popular is a movie in a short period of time. It’ll be interesting on the Oscars Night!
       div(class="row")
           div(class="col-xs-12")
               article(class="color-white")
