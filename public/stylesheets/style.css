@@ -283,7 +283,7 @@ a {
 
 .laurel-wrapper{
   width: 200px;
-  height: 130px;
+  height: 180px;
   display: inline-block;
   position: relative;
   margin-left: -40px;
@@ -295,8 +295,8 @@ a {
   margin-right: auto;
   left: 0;
   right: 0;
-  bottom: 0%;
-  font-size: 100%;
+  top: 55%;
+  font-size: 150%;
   word-wrap: break-word;
 }
 .laurel-text-counter{
@@ -305,7 +305,7 @@ a {
   margin-right: auto;
   left: 0;
   right: 0;
-  bottom: 40%;
+  top: 20%;
   font-size: 200%;
 }
 
@@ -315,7 +315,7 @@ a {
   margin-right: auto;
   left: 0;
   right: 0;
-  bottom: 65%;
+  top: 1%;
   font-size: 200%
 }
 
