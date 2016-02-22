@@ -11,7 +11,7 @@ Real time analytics trying to predict best movie 2016 winners based on tweets.
 
 ###1. Prerequisites
 
-* Node.js (we deploy to node 4.2.1, but should work on newer node as well)
+* Node.js (we deploy to node 4.2.1)
 * RethinkDB (we used 2.2.4)
 
 Assuming you use Homebrew:   
@@ -50,5 +50,10 @@ to the version 4 which was the latest available on EY. Node version for EY is ad
  
 
     "engines": {"node": "4.2.1-r1"} 
+    
+    
+## License
+
+The source code is available under [MIT License](License).
 
 
