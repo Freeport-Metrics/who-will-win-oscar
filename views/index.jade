@@ -24,7 +24,7 @@ block content
       div(class="row section")
           div(class='col-xs-12 text-center')
               h1(class="gold") And The Prize Goes To…
-              h2(class="gold") Twitter Predicts The Best Picture Oscar 2016
+              h2(class="gold") Twitter Predicts The Best Picture Oscar® 2016
       div(class='row')
           div(class='col-xs-12 text-center')
               div(class="social-button")
@@ -40,7 +40,7 @@ block content
             div(class="col-xs-8 col-sm-8 col-md-4")
                 p(class="color-white").
                     #[strong Chart 1. Aggregated Number of Tweets Per Movie]#[br]
-                    This numbers represent tweets per each movie aggregated since Feb 18th. We count all tweets that contain a movie hashtag, tweet at official movie profile or mention names of the cast.
+                    These numbers represent tweets per each movie aggregated since Feb 18th. We count all tweets that contain a movie hashtag, tweet at official movie profile or mention names of the cast.
       div(class='row section  text-center')
           div(class="col-xs-8 col-sm-4 col-md-2 col-lg-1" ng-repeat="counter in counters")
               div(class="laurel-wrapper {{applyClass(counter.name)}}")
@@ -48,7 +48,7 @@ block content
                   span(class="laurel-text-tweet")
                     i(class='fa fa-twitter {{applyClass(counter.name)}}')
                   span(class="laurel-text" ng-bind="movieLabels[counter.name]")
-                  span(class="laurel-text-counter" ng-bind="counter.value")
+                  span(class="laurel-text-counter" ng-bind="counter.value | megaNumber : 0")
                   i( class="laurel icon-laurel-right")
 
       div(class='row section')
@@ -64,7 +64,7 @@ block content
       div(class='col-xs-12')
         p(class="color-white chart-caption").
               #[strong Chart 2. Buzz Trend Line in Time]#[br]
-              This chart shows how number of tweets per movie grows in real time. The chart displays data from the last hour
+              This chart shows how number of tweets per movie grows in real time. The chart displays data from the last hour.
         div(class='overlay-mask')
         div(id="aggregated_chart" )
 
@@ -72,7 +72,7 @@ block content
         div(class="col-xs-12")
             p(class="color-white chart-caption" ).
                 #[strong Chart 3. Tweets Per Minute]#[br]
-                This chart show tweets per minute for each movie. The data shows in detail how popular is a movie in a short period of time. It’ll be interesting on the Oscars Night!
+                This chart shows tweets per minute for each movie. The data shows how popular the movie is over a short period of time. It’ll be interesting on the Oscars Night®!
             div(class='overlay-mask')
             div(id="not_aggregated_chart" style="height: 500px;")
 
@@ -81,11 +81,11 @@ block content
             article(class="color-white")
                 h2 About the Project
                 p(class="color-white").
-                    We created this real time Twitter buzz meter as a side project of our company #[a(href="http://www.freeportmetrics.com") Freeport Metrics]. The challenge was to figure out who will win the best picture #[a(href="http://www.oscars.org") Oscar 2016]. We wanted to make it real time to track changes in time, the closer to the Oscars, the better. First we brainstormed different methods of predicting the winner:
+                    We created this real time Twitter buzz meter as a side project of our company #[a(href="http://www.freeportmetrics.com") Freeport Metrics]. The challenge was to figure out who will win the best picture #[a(href="http://www.oscars.org") Oscar® 2016]. We wanted to make it real time to track changes in time, the closer to the Oscars®, the better. First we brainstormed different methods of predicting the winner:
                 ul(class="color-white")
-                    li measuring how changes the bookmakers’ score
-                    li creating a free market prediction model where people buy movie stock
-                    li mapping how connected are the members of the Academy with the nominees
+                    li measuring how bookmakers’ scores change
+                    li creating a free market prediction model where people buy movie stocks
+                    li mapping connections between the members of the Academy and the nominees
                     li measuring the buzz on Twitter in real time
                 p The Twitter buzz meter turned out to be the most interesting from the technological point of view: a lot of data! We use #[a(href="http://www.nodejs.org") Node.js] server to retrieve tweets that contain previously defined # and @ from the #[a(href="https://dev.twitter.com/streaming/overview") Twitter Stream API]. For the database we use #[a(href="http://www.rethinkdb.com") RethinkDB] to store all the data. Is our solution scalable? Well, yes. We update the counters on the fly to avoid our servers to explode :)
                 p(class="m-b-lg").
