@@ -33,7 +33,7 @@ module.exports = function (schema, io) {
       minutes.push(counter);
       if (m < 0) {
         m = 59;
-        h--;
+        h = (h  + 23) % 24;
       }
     }
     return minutes;
@@ -55,14 +55,24 @@ module.exports = function (schema, io) {
         m: last_key.split(':')[1],
         time: last_key
       };
-      var minutesAgo = 60 * (row.hour - lastUpdate.h) + (row.minute - lastUpdate.m);
+      var minutesAgo = 60 * ((row.hour - lastUpdate.h + 24) % 24) + (row.minute - lastUpdate.m);
       var newCounters = initialResult(minutesAgo, row.date, initial);
-
+      //h0 h1=h0+x0 h2=h1+x1=h0+x0+x1 h3=h2+x2=h0+x0+x1+x2
       newCounters.reverse().forEach(function (val) {
         cache.unshift(val);
       });
 
-      cache.splice(-minutesAgo, minutesAgo);
+      var removed = cache.splice(-minutesAgo, minutesAgo);
+      if (isAggregated) {
+        var last_removed_item = removed[0];
+        var removed_key = Object.keys(last_removed_item)[0];
+        for (var i = 0; i < cache.length; i++) {
+          var key = Object.keys(cache[i])[0];
+          Object.keys(cache[i][key]).forEach(function (movie) {
+            cache[i][key][movie] -= last_removed_item[removed_key][movie];
+          })
+        }
+      }
     }
     row.movies.forEach(function (title) {
       cache[0][Object.keys(cache[0])[0]][title] += 1;
@@ -95,28 +105,6 @@ module.exports = function (schema, io) {
         }).count();
   }
 
-  function getAllTweetsBefore(minutes) {
-    var seconds = minutes * 60;
-    return r.table('Tweet')
-        .orderBy({index: 'created_at'})
-        .filter(function (tweet) {
-          return r.now().sub(seconds).gt(tweet('created_at'));
-        })
-        .filter(r.row('movies').contains(function (movie) {
-          return r.expr(movies).contains(movie);
-        }))
-        .concatMap(function (tweet) {
-          return tweet('movies').distinct().map(function (title) {
-            return {
-              title: title
-            }
-          });
-        })
-        .group(function (movie) {
-          return movie('title');
-        }).count();
-  }
-
   function initialize(callback) {
     var aggregated_result = initialResult();
     var result = initialResult();
@@ -140,17 +128,10 @@ module.exports = function (schema, io) {
           }
         });
       });
-      getAllTweetsBefore(60).run().then(function (rows) {
-        rows.forEach(function (row) {
-          aggregated_result.forEach(function (counter) {
-            counter[Object.keys(counter)[0]][row['group']] += row['reduction'];
-          });
-        });
-        aggregatedCache = aggregated_result;
-        if (callback) {
-          callback();
-        }
-      });
+      aggregatedCache = aggregated_result;
+      if (callback) {
+        callback();
+      }
     });
   }
 
@@ -167,8 +148,8 @@ module.exports = function (schema, io) {
           return
         }
         var mappedRow = {
-          hour: doc['created_at'].getHours(),
-          minute: doc['created_at'].getMinutes(),
+          hour: doc['created_at'].getUTCHours(),
+          minute: doc['created_at'].getUTCMinutes(),
           date: doc['created_at'],
           text: doc['text'],
           movies: doc['movies'],
