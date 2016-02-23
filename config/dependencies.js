@@ -8,20 +8,7 @@ var path = require('path');
 module.exports = function(app, dir){
   // uncomment after placing your favicon in /public
   //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-  app.use('/js',  express.static(dir + '/node_modules/angular/'));
-  app.use('/js',  express.static(dir + '/node_modules/angular-sanitize/'));
-  app.use('/js', express.static(dir + '/node_modules/socket.io-client/'));
-  app.use('/js', express.static(dir + '/node_modules/c3/'));
-  app.use('/js', express.static(dir + '/node_modules/d3/'));
-  app.use('/js', express.static(dir + '/node_modules/epoch-charting/dist/js/'));
-  app.use('/js', express.static(dir + '/node_modules/jquery/dist/'));
   app.use('/fonts', express.static(dir + '/node_modules/font-awesome/fonts/'));
-  app.use('/css', express.static(dir + '/node_modules/font-awesome/css/'));
-  app.use('/css', express.static(dir + '/node_modules/epoch-charting/dist/css/'));
-  app.use('/css', express.static(dir + '/node_modules/bootstrap/dist/css/'));
   app.use(express.static(path.join(dir, 'public')));
 
-  // older node back-compatibility paths, older npm doesn't flatten nested modules
-  app.use('/js', express.static(dir + '/node_modules/socket.io/node_modules/socket.io-client/'));
-  app.use('/js', express.static(dir + '/node_modules/c3/node_modules/d3/'));
 }

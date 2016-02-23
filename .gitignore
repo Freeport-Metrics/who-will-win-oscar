@@ -1,5 +1,6 @@
 node_modules
 rethinkdb_data/
+public/dist
 bower_components
 .idea
 *.iml
