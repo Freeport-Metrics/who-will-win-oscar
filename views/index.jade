@@ -58,7 +58,6 @@ block content
                     i(class="fa fa-twitter {{applyClass(tweet.movies[0])}} fa-3x")
                     div
                         p(ng-bind-html="tweet.text")
-                        p(ng-bind="'Sentiment Score: '+tweet.sentiment.score" ng-class="{'green':(tweet.sentiment.score > 0),'red': tweet.sentiment.score < 0, 'blue': tweet.sentiment.score == 0}")
 
     div(class="row")
       div(class='col-xs-12')
