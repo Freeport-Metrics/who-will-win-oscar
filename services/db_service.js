@@ -9,31 +9,36 @@ module.exports = function (schema, io) {
   var movie_labels = movies_dictionary.movies_labels;
   var movie_colors = movies_dictionary.movies_colors;
 
-  var toTime = function (h, m) {
-    return ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2)
+  var toTime = function (h, m, s) {
+    return ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2)
   };
 
 
-  var initialResult = function (minutesAgo, fromDate, initialValues) {
+  var initialResult = function (secondsAgo, fromDate, initialValues) {
     var minutes = [];
-    if (!minutesAgo) {
-      minutesAgo = 60;
+    if (!secondsAgo) {
+      secondsAgo = 3600;
     }
     var now = fromDate ? fromDate : new Date();
     var h = now.getUTCHours();
     var m = now.getUTCMinutes();
+    var s = now.getUTCSeconds();
 
-    for (var i = 0; i < minutesAgo; i++) {
+    for (var i = 0; i < secondsAgo; i++) {
       var counter = {};
-      counter[toTime(h, m--)] = initialValues ? JSON.parse(JSON.stringify(initialValues)) : movies.reduce(function (obj, val) {
+      counter[toTime(h, m,s--)] = initialValues ? JSON.parse(JSON.stringify(initialValues)) : movies.reduce(function (obj, val) {
         obj[val] = 0;
         return obj;
       }, {});
 
       minutes.push(counter);
-      if (m < 0) {
-        m = 59;
-        h = (h  + 23) % 24;
+      if(s < 0) {
+        s = 59;
+        m--;
+        if (m < 0) {
+          m = 59;
+          h = (h + 23) % 24;
+        }
       }
     }
     return minutes;
@@ -53,15 +58,26 @@ module.exports = function (schema, io) {
       var lastUpdate = {
         h: last_key.split(':')[0],
         m: last_key.split(':')[1],
+        s: last_key.split(':')[2],
         time: last_key
       };
-      var minutesAgo = 60 * ((row.hour - lastUpdate.h + 24) % 24) + (row.minute - lastUpdate.m);
-      var newCounters = initialResult(minutesAgo, row.date, initial);
+      var secondsAgo = 3600 * ((row.hour - lastUpdate.h + 24) % 24) + (row.minute - lastUpdate.m+60) + (row.second - lastUpdate.s);
+      var newCounters = initialResult(secondsAgo, row.date, initial);
       newCounters.reverse().forEach(function (val) {
         cache.unshift(val);
       });
 
-      cache.splice(-minutesAgo, minutesAgo);
+      var removed = cache.splice(-secondsAgo, secondsAgo);
+      if (isAggregated) {
+        var last_removed_item = removed[0];
+        var removed_key = Object.keys(last_removed_item)[0];
+        for (var i = 0; i < cache.length; i++) {
+          var key = Object.keys(cache[i])[0];
+          Object.keys(cache[i][key]).forEach(function (movie) {
+            cache[i][key][movie] -= last_removed_item[removed_key][movie];
+          })
+        }
+      }
     }
     row.movies.forEach(function (title) {
       cache[0][Object.keys(cache[0])[0]][title] += 1;
@@ -71,8 +87,8 @@ module.exports = function (schema, io) {
   }
 
 
-  function getTweetCountPerMinuteFrom(minutes) {
-    var seconds = minutes * 60;
+  function getTweetCountPerSecondFrom(minutesAgo) {
+    var seconds = minutesAgo * 60;
     return r.table('Tweet')
         .orderBy({index: 'created_at'})
         .filter(function (tweet) {
@@ -90,29 +106,7 @@ module.exports = function (schema, io) {
           });
         })
         .group(function (movie) {
-          return [movie('title'), movie('tweet_created_at').hours(), movie('tweet_created_at').minutes()];
-        }).count();
-  }
-
-  function getAllTweetsBefore(minutes) {
-    var seconds = minutes * 60;
-    return r.table('Tweet')
-        .orderBy({index: 'created_at'})
-        .filter(function (tweet) {
-          return r.now().sub(seconds).gt(tweet('created_at'));
-        })
-        .filter(r.row('movies').contains(function (movie) {
-          return r.expr(movies).contains(movie);
-        }))
-        .concatMap(function (tweet) {
-          return tweet('movies').distinct().map(function (title) {
-            return {
-              title: title
-            }
-          });
-        })
-        .group(function (movie) {
-          return movie('title');
+          return [movie('title'), movie('tweet_created_at').hours(), movie('tweet_created_at').minutes(),movie('tweet_created_at').seconds()];
         }).count();
   }
 
@@ -120,12 +114,13 @@ module.exports = function (schema, io) {
     var aggregated_result = initialResult();
     var result = initialResult();
     tempCache = result;
-    getTweetCountPerMinuteFrom(60).run().then(function (rows) {
+    getTweetCountPerSecondFrom(60).run().then(function (rows) {
       rows.forEach(function (row) {
         var title = row['group'].splice(0, 1)[0];
         var h = row['group'][0];
         var m = row['group'][1];
-        var time = toTime(h, m);
+        var s = row['group'][2];
+        var time = toTime(h, m,s);
         result.forEach(function (counter) {
           if (counter[time]) {
             counter[time][title] = row.reduction;
@@ -139,17 +134,10 @@ module.exports = function (schema, io) {
           }
         });
       });
-      getAllTweetsBefore(60).run().then(function (rows) {
-        rows.forEach(function (row) {
-          aggregated_result.forEach(function (counter) {
-            counter[Object.keys(counter)[0]][row['group']] += row['reduction'];
-          });
-        });
-        aggregatedCache = aggregated_result;
-        if (callback) {
-          callback();
-        }
-      });
+      aggregatedCache = aggregated_result;
+      if (callback) {
+        callback();
+      }
     });
   }
 
@@ -168,6 +156,7 @@ module.exports = function (schema, io) {
         var mappedRow = {
           hour: doc['created_at'].getUTCHours(),
           minute: doc['created_at'].getUTCMinutes(),
+          second: doc['created_at'].getUTCSeconds(),
           date: doc['created_at'],
           text: doc['text'],
           movies: doc['movies'],

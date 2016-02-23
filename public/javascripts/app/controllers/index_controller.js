@@ -34,9 +34,9 @@ angular.module('whoWillWinOscars.controllers')
             bindto: '#aggregated_chart',
             data: {
               x: 'time',
-              xFormat: '%H:%M',
+              xFormat: '%H:%M:%S',
               json: $scope.preparedAggregatedData,
-              type: 'spline',
+              type: 'line',
               colors: {}
             },
             tooltip: {
@@ -52,7 +52,7 @@ angular.module('whoWillWinOscars.controllers')
               x: {
                 type: 'timeseries',
                 tick: {
-                  format: '%H:%M'
+                  format: '%H:%M:%S'
                 }
               },
               y: {
@@ -115,7 +115,7 @@ angular.module('whoWillWinOscars.controllers')
 
       $scope.socket.on('initialize_tweet_not_aggregated', function(data){
         $scope.prepareChart($scope.nonAggregatedChart, data, $scope.preparedNotAggregatedData);
-        $scope.updateChart($scope.nonAggregatedChart, $scope.preparedNotAggregatedData, 'newValNonAgg', false);
+        //$scope.updateChart($scope.nonAggregatedChart, $scope.preparedNotAggregatedData, 'newValNonAgg', false);
       })
 
       $scope.socket.on('new_tweets_aggregates', function(data){
@@ -159,7 +159,7 @@ angular.module('whoWillWinOscars.controllers')
       function updateChart(chart, chartData, newValListener, updateCounters){
         $interval(function(){
           var date = new Date();
-          var current_time =  d3.time.format("%H:%M")(new Date(date.getUTCFullYear(), date.getUTCMonth(),
+          var current_time =  d3.time.format("%H:%M:%S")(new Date(date.getUTCFullYear(), date.getUTCMonth(),
               date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds()));
           var time = false;
           angular.forEach(chartData['time'], function(value, index){
@@ -189,7 +189,7 @@ angular.module('whoWillWinOscars.controllers')
             angular.forEach($scope[newValListener][counter_key], function(newValue, key){
               if(!time){
                 chartData[key].unshift(newValue);
-                if(chartData[key].length > 60){
+                if(chartData[key].length > 3600){
                   chartData[key].pop();
                 }
               }else{
