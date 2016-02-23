@@ -42,7 +42,7 @@ block content
                     #[strong Chart 1. Aggregated Number of Tweets Per Movie]#[br]
                     This numbers represent tweets per each movie aggregated since Feb 18th. We count all tweets that contain a movie hashtag, tweets at the official movie profile or tweets that mention names of the cast.
       div(class='row section  text-center')
-          div(class="col-xs-8 col-sm-4 col-md-2 col-lg-1" ng-repeat="counter in counters")
+          div(class=" col-xs-8 col-sm-8 col-md-2 col-lg-2" ng-repeat="counter in counters")
               div(class="laurel-wrapper {{applyClass(counter.name)}}")
                   i( class="laurel icon-laurel-left")
                   span(class="laurel-text-tweet")
@@ -61,7 +61,7 @@ block content
 
     div(class="row")
       div(class='col-xs-12')
-        p(class="color-white chart-caption").
+        p(class="color-white").
               #[strong Chart 2. Buzz Trend Line in Time]#[br]
               This chart shows how the number of tweets per movie grows in real time. The chart displays data from the last hour.
         div(class='overlay-mask')
@@ -69,7 +69,7 @@ block content
 
     div(class="row" style="margin-top: 75px;")
         div(class="col-xs-12")
-            p(class="color-white chart-caption" ).
+            p(class="color-white" ).
                 #[strong Chart 3. Tweets Per Minute]#[br]
                 This chart show tweets per minute for each movie. The data shows in detail how popular is a movie is in a short period of time. It’ll be interesting on the Oscars Night!
             div(class='overlay-mask')
