@@ -40,7 +40,7 @@ block content
             div(class="col-xs-8 col-sm-8 col-md-4")
                 p(class="color-white").
                     #[strong Chart 1. Aggregated Number of Tweets Per Movie]#[br]
-                    This numbers represent tweets per each movie aggregated since Feb 18th. We count all tweets that contain a movie hashtag, tweets at the official movie profile or tweets that mention names of the cast.
+                    These numbers represent tweets per each movie aggregated since Feb 18th. We count all tweets that contain a movie hashtag, tweets at the official movie profile or tweets that mention names of the cast.
       div(class='row section  text-center')
           div(class=" col-xs-8 col-sm-8 col-md-2 col-lg-2" ng-repeat="counter in counters")
               div(class="laurel-wrapper {{applyClass(counter.name)}}")
@@ -71,7 +71,7 @@ block content
         div(class="col-xs-12")
             p(class="color-white" ).
                 #[strong Chart 3. Tweets Per Minute]#[br]
-                This chart show tweets per minute for each movie. The data shows in detail how popular is a movie is in a short period of time. It’ll be interesting on the Oscars Night!
+                This chart shows tweets per minute for each movie. The data shows in detail how popular a movie is in a short period of time. It’ll be interesting on the Oscars Night®!
             div(class='overlay-mask')
             div(id="not_aggregated_chart" style="height: 500px;")
 
@@ -85,7 +85,7 @@ block content
                     li Measuring changes to the bookmakers’ scoring
                     li Creating a free market prediction model where people buy movie stock
                     li Mapping how connected the members of the Academy are with the nominees
-                    li measuring the buzz on Twitter in real time
+                    li Measuring the buzz on Twitter in real time
                 p The Twitter buzz meter turned out to be the most interesting from the technological point of view: a lot of data! We use #[a(href="http://www.nodejs.org") Node.js] server to retrieve tweets that contain previously defined # and @ from the #[a(href="https://dev.twitter.com/streaming/overview") Twitter Stream API]. For the database we use #[a(href="http://www.rethinkdb.com") RethinkDB] to store all the data. Is our solution scalable? Well, yes. We update the counters on the fly to avoid our servers from exploding :)
                 p(class="m-b-lg").
                     On the front-end we used #[a(href="http://www.socket.io") Socket.IO] to get data streamed from the server instead of making queries each time. For drawing charts we used #[a(href="http://c3js.org/") C3] library. That’s the whole magic!
