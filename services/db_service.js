@@ -171,7 +171,8 @@ module.exports = function (schema, io) {
           date: doc['created_at'],
           text: doc['text'],
           movies: doc['movies'],
-          sentiment: doc['sentiment']
+          sentiment: doc['sentiment'],
+          lang: doc['lang']
         };
         var lastCounterAggregated = updateCache(mappedRow, aggregatedCache, true);
         var lastCounter = updateCache(mappedRow, tempCache, false);
@@ -206,7 +207,9 @@ module.exports = function (schema, io) {
     findClientsSocket().forEach(function (socket) {
       socket.emit('new_tweets_aggregates', lastCounterAggregated);
       socket.emit('new_tweets', lastCounter);
-      socket.emit('tweet', tweet);
+      if(tweet.lang == 'en') {
+        socket.emit('tweet', tweet);
+      }
     });
 
   }
