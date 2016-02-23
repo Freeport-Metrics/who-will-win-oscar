@@ -56,4 +56,6 @@ to the version 4 which was the latest available on EY. Node version for EY is ad
 
 The source code is available under [MIT License](License).
 
+Images by: http://www.clker.com/clipart-laurel-wreath.html
+
 
