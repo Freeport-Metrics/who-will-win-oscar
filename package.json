@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "prestart": "gulp",
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "start-without-gulp": "node ./bin/www"
   },
   "dependencies": {
     "angular": "^1.4.9",

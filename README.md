@@ -30,6 +30,8 @@ Assuming you use Homebrew:
     
     rethinkdb    
     npm start
+    or
+    npm run start-without-gulp (to skip static resources compilation phase)
   
 ###5. Open in browser
 * the app: [http://localhost:3000/](http://localhost:3000/)
