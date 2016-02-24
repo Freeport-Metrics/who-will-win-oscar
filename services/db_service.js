@@ -8,13 +8,14 @@ module.exports = function (schema, io) {
   var movies = movies_dictionary.movies;
   var movie_labels = movies_dictionary.movies_labels;
   var movie_colors = movies_dictionary.movies_colors;
+  var aggregatedCache = {data: {}, time: []};
+  var tempCache = {data: {}, time: []};
 
-  var toTime = function (h, m, s) {
+
+  function toTime(h, m, s) {
     return ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2)
-  };
-
-
-  var initialResult = function (secondsAgo, fromDate, initialValues) {
+  }
+  function initialResult(secondsAgo, fromDate, initialValues) {
     var minutes = [];
     if (!secondsAgo) {
       secondsAgo = 3600;
@@ -26,13 +27,13 @@ module.exports = function (schema, io) {
 
     for (var i = 0; i < secondsAgo; i++) {
       var counter = {};
-      counter[toTime(h, m,s--)] = initialValues ? JSON.parse(JSON.stringify(initialValues)) : movies.reduce(function (obj, val) {
+      counter[toTime(h, m, s--)] = initialValues ? JSON.parse(JSON.stringify(initialValues)) : movies.reduce(function (obj, val) {
         obj[val] = 0;
         return obj;
       }, {});
 
       minutes.push(counter);
-      if(s < 0) {
+      if (s < 0) {
         s = 59;
         m--;
         if (m < 0) {
@@ -43,16 +44,15 @@ module.exports = function (schema, io) {
     }
     return minutes;
   };
-
-  var generateKeys = function (secondsAgo, fromDate) {
+  function generateKeys(secondsAgo, fromDate) {
     var keys = [];
     var h = fromDate.getUTCHours();
     var m = fromDate.getUTCMinutes();
     var s = fromDate.getUTCSeconds();
 
     for (var i = 0; i < secondsAgo; i++) {
-      keys.push(toTime(h, m,s--));
-      if(s < 0) {
+      keys.push(toTime(h, m, s--));
+      if (s < 0) {
         s = 59;
         m--;
         if (m < 0) {
@@ -63,28 +63,24 @@ module.exports = function (schema, io) {
     }
     return keys;
   };
-
-  var aggregatedCache = {data:{},time:[]};
-  var tempCache = {data:{},time:[]};
-
-
-  function updateValues(cache, secondsAgo, isAggregated){
-    Object.keys(cache.data).forEach(function(title){
+  function updateValues(cache, secondsAgo, isAggregated) {
+    Object.keys(cache.data).forEach(function (title) {
       var val = isAggregated ? cache.data[title][0] : 0;
-      for(var i = 0; i < secondsAgo; i++) {
+      for (var i = 0; i < secondsAgo; i++) {
         cache.data[title].unshift(val);
       }
       var removed = cache.data[title].splice(-secondsAgo, secondsAgo);
       var removedValue = removed[0];
-      if(isAggregated) {
-        cache.data[title].map(function(val){return val - removedValue;});
+      if (isAggregated) {
+        cache.data[title].map(function (val) {
+          return val - removedValue;
+        });
       }
     });
 
   }
-
-  function updateCache( cache, isAggregated, row) {
-    if(!row) {
+  function updateCache(cache, isAggregated, row) {
+    if (!row) {
       var now = new Date();
       var h = now.getUTCHours();
       var m = now.getUTCMinutes();
@@ -99,7 +95,7 @@ module.exports = function (schema, io) {
       };
     }
 
-    var time = toTime(row.hour, row.minute,row.second);
+    var time = toTime(row.hour, row.minute, row.second);
 
     if (cache.time[0] != time) {
       var last_key = cache.time[0];
@@ -115,8 +111,8 @@ module.exports = function (schema, io) {
       var newKeys = generateKeys(secondsAgo, row.date);
       newKeys.unshift(0);
       newKeys.unshift(0);
-      cache.time.splice.apply(cache.time,newKeys);
-      cache.time.splice(-secondsAgo,secondsAgo);
+      cache.time.splice.apply(cache.time, newKeys);
+      cache.time.splice(-secondsAgo, secondsAgo);
 
     }
 
@@ -126,7 +122,6 @@ module.exports = function (schema, io) {
 
     return cache[0];
   }
-
   function getTweetCountPerSecondFrom(minutesAgo) {
     var seconds = minutesAgo * 60;
     return r.table('Tweet')
@@ -146,10 +141,9 @@ module.exports = function (schema, io) {
           });
         })
         .group(function (movie) {
-          return [movie('title'), movie('tweet_created_at').hours(), movie('tweet_created_at').minutes(),movie('tweet_created_at').seconds()];
+          return [movie('title'), movie('tweet_created_at').hours(), movie('tweet_created_at').minutes(), movie('tweet_created_at').seconds()];
         }).count();
   }
-
   function initialize(callback) {
     var aggregated_result = initialResult();
     var result = initialResult();
@@ -159,7 +153,7 @@ module.exports = function (schema, io) {
         var h = row['group'][0];
         var m = row['group'][1];
         var s = row['group'][2];
-        var time = toTime(h, m,s);
+        var time = toTime(h, m, s);
         result.forEach(function (counter) {
           if (counter[time]) {
             counter[time][title] = row.reduction;
@@ -175,23 +169,23 @@ module.exports = function (schema, io) {
       });
 
 
-      aggregated_result.forEach(function(value){
+      aggregated_result.forEach(function (value) {
         var key = Object.keys(value)[0];
         aggregatedCache['time'].push(key);
-        Object.keys(value[key]).forEach(function(k){
+        Object.keys(value[key]).forEach(function (k) {
           var val = value[key][k];
-          if( !aggregatedCache.data[k] ){
+          if (!aggregatedCache.data[k]) {
             aggregatedCache.data[k] = [];
           }
           aggregatedCache.data[k].push(val);
         });
       });
-      result.forEach(function(value){
+      result.forEach(function (value) {
         var key = Object.keys(value)[0];
         tempCache['time'].push(key);
-        Object.keys(value[key]).forEach(function(k){
+        Object.keys(value[key]).forEach(function (k) {
           var val = value[key][k];
-          if( !tempCache.data[k] ){
+          if (!tempCache.data[k]) {
             tempCache.data[k] = [];
           }
           tempCache.data[k].push(val);
@@ -204,12 +198,10 @@ module.exports = function (schema, io) {
       }
     });
   }
-
   function sendCache(socket) {
     socket.emit('initialize_tweet_aggregated', aggregatedCache);
     socket.emit('initialize_tweet_not_aggregated', tempCache);
   }
-
   function listenForChanges(callback) {
 
     schema.tweet.changes().then(function (feed) {
@@ -235,7 +227,6 @@ module.exports = function (schema, io) {
       });
     });
   }
-
   function findClientsSocket(roomId, namespace) {
     var res = [];
     var ns = io.of(namespace || "/");    // the default namespace is "/"
@@ -254,7 +245,6 @@ module.exports = function (schema, io) {
     }
     return res;
   }
-
   function sendCountersToActiveSockets(tweet) {
 
     findClientsSocket().forEach(function (socket) {
@@ -262,15 +252,14 @@ module.exports = function (schema, io) {
     });
 
   }
-
   function sendKeys(socket) {
     socket.emit('structure', {labels: movie_labels, colors: movie_colors})
   }
-
-  function cacheWatch(){
-    updateCache(aggregatedCache,true);
-    updateCache(tempCache,false);
+  function cacheWatch() {
+    updateCache(aggregatedCache, true);
+    updateCache(tempCache, false);
   }
+
   // We need to wait for model to initialise, otherwise we got concurrency problem
   // This is probably not documented but we found it based on the source code
   schema.tweet.model().ready().then(function () {
@@ -278,7 +267,7 @@ module.exports = function (schema, io) {
     initialize(function () {
 
       listenForChanges(sendCountersToActiveSockets);
-      var interval = setInterval(cacheWatch,1000);
+      var interval = setInterval(cacheWatch, 1000);
       io.on('connection', function (socket) {
         console.log('Socket connected');
         sendKeys(socket);
