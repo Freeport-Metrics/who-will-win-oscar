@@ -34,7 +34,11 @@
     "gulp": "latest",
     "gulp-concat": "latest",
     "gulp-uglify": "latest",
-    "gulp-cssnano": "latest"
+    "gulp-cssnano": "latest",
+    "gulp-jade": "latest",
+    "gulp-useref": "latest",
+    "gulp-if": "latest"
+
   },
   "engines": {"node": "4.2.1-r1"}
 }
