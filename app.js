@@ -9,7 +9,10 @@ require('./routes/routes')(app)
 // Adding app configuration to bootstrapper
 require('./config/config')(app, __dirname);
 // Adding dependencies to bootstrapper
-require('./config/dependencies')(app, __dirname);
+var static_resources = require('./config/static_resources')(__dirname);
+app.locals.static_resources =  static_resources;
+
+require('./config/dependencies')(app, __dirname, static_resources);
 // Adding error handlers config to bootstrapper
 require('./config/error_handlers')(app);
 // Adding ORM models to bootstrapper

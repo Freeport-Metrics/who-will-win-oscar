@@ -2,9 +2,15 @@ doctype html
 html(xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#")
   head
     title Can Twitter Predict the Oscar Winner?
-    link(rel='stylesheet', href='dist/all.min.css')
+    // build:css /dist/all.min.css
+    each resource in static_resources.css
+      link(rel='stylesheet', href='/#{resource}')
+    // endbuild
     link(href='https://fonts.googleapis.com/css?family=Josefin+Sans:400,700' rel='stylesheet' type='text/css')
-    script(src="dist/all.min.js")
+    // build:js /dist/all.min.js
+    each resource in static_resources.js
+      script(src='/#{resource}')
+    // endbuild
     meta( property="og:url"           content="http://bestpicture2016.freeportmetrics.com/?utm_source=facebook&utm_medium=share&utm_campaign=facebook%20share")
     meta( property="og:type"          content="website" )
     meta( property="og:title"         content="Can Twitter Predict the Oscar Winner?" )
