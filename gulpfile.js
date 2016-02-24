@@ -16,7 +16,7 @@ gulp.task('jade', function () {
         pretty: true
       }))
       .pipe(useref({searchPath: '.'}))
-      .pipe(gulpif('*.js', uglify({mangle: false)))
+      .pipe(gulpif('*.js', uglify({mangle: false})))
       .pipe(gulpif('*.css', cssnano()))
       .pipe(gulp.dest('./public/'))
 });
