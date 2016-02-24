@@ -27,6 +27,8 @@ require('./services/db_service')(schema, io)
 
 require('./services/twitter_service.js')(twitter, schema);
 
+app.locals.pretty = true;
+
 module.exports = {
   app: app,
   server: server

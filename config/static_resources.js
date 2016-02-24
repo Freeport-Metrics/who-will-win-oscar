@@ -25,6 +25,7 @@ module.exports = function (dir) {
       "node_modules/d3/d3.min.js",
       "node_modules/c3/node_modules/d3/d3.min.js",
       "node_modules/c3/c3.min.js",
+      "services/ui_backend_commons.js",
       "public/javascripts/app.js",
       "public/javascripts/app/components/components_wrapper.js",
       "public/javascripts/app/components/chart_directive.js",

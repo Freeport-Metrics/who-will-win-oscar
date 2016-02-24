@@ -1,6 +1,10 @@
 /**
  * Created by Matuszewski on 04/02/16.
  */
+
+var uiBackendCommons = require('./ui_backend_commons')();
+
+
 module.exports = function (schema, io) {
   var schema = schema;
   var r = schema.r;
@@ -12,22 +16,18 @@ module.exports = function (schema, io) {
   var tempCache = {time: []};
 
 
-  function toTime(h, m, s) {
-    return ('0' + h).slice(-2) + ':' + ('0' + m).slice(-2) + ':' + ('0' + s).slice(-2)
-  }
-  function initialResult(secondsAgo, fromDate, initialValues) {
+
+  function initialResult() {
     var minutes = [];
-    if (!secondsAgo) {
-      secondsAgo = 3600;
-    }
-    var now = fromDate ? fromDate : new Date();
+    var secondsAgo = 60 * uiBackendCommons.chartMinutesBack;
+    var now = new Date();
     var h = now.getUTCHours();
     var m = now.getUTCMinutes();
     var s = now.getUTCSeconds();
 
     for (var i = 0; i < secondsAgo; i++) {
       var counter = {};
-      counter[toTime(h, m, s--)] = initialValues ? JSON.parse(JSON.stringify(initialValues)) : movies.reduce(function (obj, val) {
+      counter[uiBackendCommons.toTime(h, m, s--)] = movies.reduce(function (obj, val) {
         obj[val] = 0;
         return obj;
       }, {});
@@ -44,85 +44,7 @@ module.exports = function (schema, io) {
     }
     return minutes;
   };
-  function generateKeys(secondsAgo, fromDate) {
-    var keys = [];
-    var h = fromDate.getUTCHours();
-    var m = fromDate.getUTCMinutes();
-    var s = fromDate.getUTCSeconds();
 
-    for (var i = 0; i < secondsAgo; i++) {
-      keys.push(toTime(h, m, s--));
-      if (s < 0) {
-        s = 59;
-        m--;
-        if (m < 0) {
-          m = 59;
-          h = (h + 23) % 24;
-        }
-      }
-    }
-    return keys;
-  };
-  function updateValues(cache, secondsAgo, isAggregated) {
-    Object.keys(cache).forEach(function (title) {
-      if(title == 'time') return;
-      var val = isAggregated ? cache[title][0] : 0;
-      for (var i = 0; i < secondsAgo; i++) {
-        cache[title].unshift(val);
-      }
-      var removed = cache[title].splice(-secondsAgo, secondsAgo);
-      var removedValue = removed[0];
-      if (isAggregated) {
-        cache[title].map(function (val) {
-          return val - removedValue;
-        });
-      }
-    });
-
-  }
-  function updateCache(cache, isAggregated, row) {
-    if (!row) {
-      var now = new Date();
-      var h = now.getUTCHours();
-      var m = now.getUTCMinutes();
-      var s = now.getUTCSeconds();
-
-      row = {
-        hour: h,
-        minute: m,
-        second: s,
-        date: now,
-        movies: []
-      };
-    }
-
-    var time = toTime(row.hour, row.minute, row.second);
-
-    if (cache.time[0] != time) {
-      var last_key = cache.time[0];
-
-      var lastUpdate = {
-        h: last_key.split(':')[0],
-        m: last_key.split(':')[1],
-        s: last_key.split(':')[2],
-        time: last_key
-      };
-      var secondsAgo = 3600 * ((row.hour - lastUpdate.h + 24) % 24) + (row.minute - lastUpdate.m) * 60 + (row.second - lastUpdate.s);
-      updateValues(cache, secondsAgo, isAggregated);
-      var newKeys = generateKeys(secondsAgo, row.date);
-      newKeys.unshift(0);
-      newKeys.unshift(0);
-      cache.time.splice.apply(cache.time, newKeys);
-      cache.time.splice(-secondsAgo, secondsAgo);
-
-    }
-
-    row.movies.forEach(function (title) {
-      cache[title][0] += 1;
-    });
-
-    return cache[0];
-  }
   function getTweetCountPerSecondFrom(minutesAgo) {
     var seconds = minutesAgo * 60;
     return r.table('Tweet')
@@ -148,13 +70,13 @@ module.exports = function (schema, io) {
   function initialize(callback) {
     var aggregated_result = initialResult();
     var result = initialResult();
-    getTweetCountPerSecondFrom(60).run().then(function (rows) {
+    getTweetCountPerSecondFrom(uiBackendCommons.chartMinutesBack).run().then(function (rows) {
       rows.forEach(function (row) {
         var title = row['group'].splice(0, 1)[0];
         var h = row['group'][0];
         var m = row['group'][1];
         var s = row['group'][2];
-        var time = toTime(h, m, s);
+        var time = uiBackendCommons.toTime(h, m, s);
         result.forEach(function (counter) {
           if (counter[time]) {
             counter[time][title] = row.reduction;
@@ -220,8 +142,8 @@ module.exports = function (schema, io) {
           sentiment: doc['sentiment'],
           lang: doc['lang']
         };
-        updateCache(aggregatedCache, true, mappedRow);
-        updateCache(tempCache, false, mappedRow);
+        uiBackendCommons.updateCache(aggregatedCache, true, mappedRow);
+        uiBackendCommons.updateCache(tempCache, false, mappedRow);
         if (callback) {
           callback(mappedRow);
         }
@@ -257,8 +179,8 @@ module.exports = function (schema, io) {
     socket.emit('structure', {labels: movie_labels, colors: movie_colors})
   }
   function cacheWatch() {
-    updateCache(aggregatedCache, true);
-    updateCache(tempCache, false);
+    uiBackendCommons.updateCache(aggregatedCache, true);
+    uiBackendCommons.updateCache(tempCache, false);
   }
 
   // We need to wait for model to initialise, otherwise we got concurrency problem
