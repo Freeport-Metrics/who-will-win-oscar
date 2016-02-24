@@ -14,6 +14,13 @@ module.exports = function (schema, io) {
   var movie_colors = movies_dictionary.movies_colors;
   var aggregatedCache = {time: []};
   var tempCache = {time: []};
+  var overallCounter = (function(){
+    var c = {};
+    movies.forEach(function(title){
+      c[title] = 0;
+    });
+    return c;
+  })();
 
 
 
@@ -45,6 +52,28 @@ module.exports = function (schema, io) {
     return minutes;
   }
 
+  function getAllTweetsBefore(minutes) {
+    var seconds = minutes * 60;
+    return r.table('Tweet')
+        .orderBy({index: 'created_at'})
+        .filter(function (tweet) {
+          return r.now().sub(seconds).gt(tweet('created_at'));
+        })
+        .filter(r.row('movies').contains(function (movie) {
+          return r.expr(movies).contains(movie);
+        }))
+        .concatMap(function (tweet) {
+          return tweet('movies').distinct().map(function (title) {
+            return {
+              title: title
+            }
+          });
+        })
+        .group(function (movie) {
+          return movie('title');
+        }).count();
+  }
+
   function getTweetCountPerSecondFrom(minutesAgo) {
     var seconds = minutesAgo * 60;
     return r.table('Tweet')
@@ -67,6 +96,8 @@ module.exports = function (schema, io) {
           return [movie('title'), movie('tweet_created_at').hours(), movie('tweet_created_at').minutes(), movie('tweet_created_at').seconds()];
         }).count();
   }
+
+
   function initialize(callback) {
     var aggregated_result = initialResult();
     var result = initialResult();
@@ -115,11 +146,16 @@ module.exports = function (schema, io) {
         });
       });
 
-
-      if (callback) {
-        callback();
-      }
+      getAllTweetsBefore(0).run().then(function(rows){
+        rows.forEach(function(row){
+          overallCounter[row['group']] = row['reduction'];
+        });
+        if (callback) {
+          callback();
+        }
+      });
     });
+
   }
   function sendCache(socket) {
     socket.emit('initialize_tweet_aggregated', aggregatedCache);
@@ -144,6 +180,7 @@ module.exports = function (schema, io) {
         };
         uiBackendCommons.updateCache(aggregatedCache, true, mappedRow);
         uiBackendCommons.updateCache(tempCache, false, mappedRow);
+        uiBackendCommons.updateCounter(overallCounter,mappedRow);
         if (callback) {
           callback(mappedRow);
         }
@@ -176,7 +213,7 @@ module.exports = function (schema, io) {
 
   }
   function sendKeys(socket) {
-    socket.emit('structure', {labels: movie_labels, colors: movie_colors})
+    socket.emit('structure', {labels: movie_labels, colors: movie_colors,counters: overallCounter})
   }
   function cacheWatch() {
     uiBackendCommons.updateCache(aggregatedCache, true);
