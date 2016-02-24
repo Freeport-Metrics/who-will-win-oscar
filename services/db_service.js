@@ -8,8 +8,8 @@ module.exports = function (schema, io) {
   var movies = movies_dictionary.movies;
   var movie_labels = movies_dictionary.movies_labels;
   var movie_colors = movies_dictionary.movies_colors;
-  var aggregatedCache = {data: {}, time: []};
-  var tempCache = {data: {}, time: []};
+  var aggregatedCache = {time: []};
+  var tempCache = {time: []};
 
 
   function toTime(h, m, s) {
@@ -64,15 +64,16 @@ module.exports = function (schema, io) {
     return keys;
   };
   function updateValues(cache, secondsAgo, isAggregated) {
-    Object.keys(cache.data).forEach(function (title) {
-      var val = isAggregated ? cache.data[title][0] : 0;
+    Object.keys(cache).forEach(function (title) {
+      if(title == 'time') return;
+      var val = isAggregated ? cache[title][0] : 0;
       for (var i = 0; i < secondsAgo; i++) {
-        cache.data[title].unshift(val);
+        cache[title].unshift(val);
       }
-      var removed = cache.data[title].splice(-secondsAgo, secondsAgo);
+      var removed = cache[title].splice(-secondsAgo, secondsAgo);
       var removedValue = removed[0];
       if (isAggregated) {
-        cache.data[title].map(function (val) {
+        cache[title].map(function (val) {
           return val - removedValue;
         });
       }
@@ -117,7 +118,7 @@ module.exports = function (schema, io) {
     }
 
     row.movies.forEach(function (title) {
-      cache.data[title][0] += 1;
+      cache[title][0] += 1;
     });
 
     return cache[0];
@@ -174,10 +175,10 @@ module.exports = function (schema, io) {
         aggregatedCache['time'].push(key);
         Object.keys(value[key]).forEach(function (k) {
           var val = value[key][k];
-          if (!aggregatedCache.data[k]) {
-            aggregatedCache.data[k] = [];
+          if (!aggregatedCache[k]) {
+            aggregatedCache[k] = [];
           }
-          aggregatedCache.data[k].push(val);
+          aggregatedCache[k].push(val);
         });
       });
       result.forEach(function (value) {
@@ -185,10 +186,10 @@ module.exports = function (schema, io) {
         tempCache['time'].push(key);
         Object.keys(value[key]).forEach(function (k) {
           var val = value[key][k];
-          if (!tempCache.data[k]) {
-            tempCache.data[k] = [];
+          if (!tempCache[k]) {
+            tempCache[k] = [];
           }
-          tempCache.data[k].push(val);
+          tempCache[k].push(val);
         });
       });
 
