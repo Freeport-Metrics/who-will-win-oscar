@@ -34,9 +34,9 @@ uiBackendCommonsInit = function () {
       var removed = cache[title].splice(-secondsAgo, secondsAgo);
       var removedValue = removed[0];
       if (isAggregated) {
-        cache[title].map(function (val) {
-          return val - removedValue;
-        });
+        for (var j = cache[title].length - 1; j >= 0; j--) {
+          cache[title][j] -= removedValue;
+        }
       }
     });
 
@@ -60,7 +60,7 @@ uiBackendCommonsInit = function () {
 
     var time = toTime(row.hour, row.minute, row.second);
 
-    if (cache.time[0] != time) {
+    if (cache.time[0] < time) {
       var last_key = cache.time[0];
 
       var lastUpdate = {

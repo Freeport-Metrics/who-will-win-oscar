@@ -43,7 +43,7 @@ module.exports = function (schema, io) {
       }
     }
     return minutes;
-  };
+  }
 
   function getTweetCountPerSecondFrom(minutesAgo) {
     var seconds = minutesAgo * 60;
