@@ -308,8 +308,8 @@ a {
   margin-right: auto;
   left: 0;
   right: 0;
-  top: 10%;
-  font-size: 200%;
+  top: 12.5%;
+  font-size: 150%;
 }
 
 @media (min-width: 1090px) {
@@ -324,7 +324,7 @@ a {
   }
 
   .laurel-text-counter {
-    top: 15%;
+    top: 20%;
   }
 
 }
