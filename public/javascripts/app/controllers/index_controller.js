@@ -7,15 +7,12 @@ angular.module('whoWillWinOscars.controllers')
         multiplex: false
       });
       $scope.tweets = [];
-      $scope.newVal = null;
-      $scope.newValNonAgg = null;
       $scope.tweet = null;
       $scope.tweethide = false;
       $scope.initialized = false;
       $scope.preparedAggregatedData = {};
-      $scope.preparedNotAggregatedData = {};
       $scope.aggregatedChart = null;
-      $scope.nonAggregatedChart = null;
+      $scope.counters = [];
       $scope.uiBackendCommons = uiBackendCommonsInit();
 
       $scope.movieLabels = {}
@@ -40,11 +37,6 @@ angular.module('whoWillWinOscars.controllers')
           $scope.preparedAggregatedData = angular.copy(initialData);
           $scope.aggregatedChart = $scope.createChart('#aggregated_chart', $scope.preparedAggregatedData,
               colors, '%H:%M:%S');
-
-
-          $scope.preparedNotAggregatedData = angular.copy(initialData);
-          $scope.nonAggregatedChart = $scope.createChart('#not_aggregated_chart', $scope.preparedNotAggregatedData,
-              colors, '%H:%M');
         })
       })
 
@@ -53,7 +45,6 @@ angular.module('whoWillWinOscars.controllers')
       });
 
       $scope.socket.on('tweet', function (data) {
-        console.log('new tweet');
         data.date = new Date(); // to synchronize server and ui time
         $scope.uiBackendCommons.updateCache($scope.preparedAggregatedData, true, data);
         $scope.$apply(function () {
@@ -76,28 +67,29 @@ angular.module('whoWillWinOscars.controllers')
       $scope.socket.on('initialize_tweet_aggregated', function (data) {
         $scope.preparedAggregatedData = data;
         $scope.addTimeDimension($scope.preparedAggregatedData);
-        console.log($scope.preparedAggregatedData);
         $interval($scope.reloadAggregatedChart, 1000);
       })
-
-      $scope.socket.on('initialize_tweet_not_aggregated', function (data) {
-//        $scope.prepareChart($scope.nonAggregatedChart, data, $scope.preparedNotAggregatedData);
-      })
-
 
       $scope.createChart = createChart;
       $scope.applyClass = applyClass;
       $scope.applyHighlight = applyHighlight;
       $scope.prepareChart = prepareChart;
-//      $scope.generateData = generateData;
       $scope.addTimeDimension = addTimeDimension;
       $scope.reloadAggregatedChart = reloadAggregatedChart;
 
       function reloadAggregatedChart() {
         $scope.uiBackendCommons.updateCache($scope.preparedAggregatedData, true);
-        $scope.aggregatedChart.load({
-          json: sampleData($scope.preparedAggregatedData, 1)
+        var sampledData = sampleData($scope.preparedAggregatedData, 1);
+        var ticks = [];
+        angular.forEach(sampledData.time, function(time){
+          if(time.indexOf(':00')!= -1){
+            ticks.push(time);
+          }
         })
+        $scope.aggregatedChart.internal.config.axis_x_tick_values= ticks; // WARNING: using private api
+        $scope.aggregatedChart.load({
+          json: sampledData
+        });
       }
 
       function createChart(elementId, data, colors, dateFormat) {
@@ -123,7 +115,8 @@ angular.module('whoWillWinOscars.controllers')
             x: {
               type: 'timeseries',
               tick: {
-                format: dateFormat
+                format: dateFormat,
+                values:['15:39:00']
               }
             },
             y: {
@@ -161,17 +154,6 @@ angular.module('whoWillWinOscars.controllers')
         });
       }
 
-//      function generateData() {
-//        var result = {};
-//        angular.forEach($scope.movieLabels, function (value, key) {
-//          result[key] = [];
-//          for (var i = 0; i < 60 * 60; i++) {
-//            result[key].push(Math.floor(Math.random() * 1000) + 1)
-//          }
-//        });
-//        return result;
-//      }
-
       function addTimeDimension(data) {
         var timeDimension = [];
         var date = new Date();
@@ -197,8 +179,6 @@ angular.module('whoWillWinOscars.controllers')
           }
           result[key] = sampled;
         });
-        console.log(result['Revenant'][1]);
-        console.log(result['Revenant'][result['Revenant'].length -1]);
         return result;
       }
 
