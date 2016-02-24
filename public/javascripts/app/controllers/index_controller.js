@@ -14,7 +14,8 @@ angular.module('whoWillWinOscars.controllers')
       $scope.aggregatedChart = null;
       $scope.counters = [];
       $scope.uiBackendCommons = uiBackendCommonsInit();
-
+      $scope.counters = [];
+      $scope.countersObject = {};
       $scope.movieLabels = {}
 
       $scope.socket.on("connect", function (socket) {
@@ -32,6 +33,9 @@ angular.module('whoWillWinOscars.controllers')
             initialData[key] = [];
             index = index + 1;
           })
+          console.log(data.counters);
+          $scope.countersObject = data.counters;
+          updateCounters(data.counters);
           initialData['time'] = [];
 
           $scope.preparedAggregatedData = angular.copy(initialData);
@@ -47,6 +51,9 @@ angular.module('whoWillWinOscars.controllers')
       $scope.socket.on('tweet', function (data) {
         data.date = new Date(); // to synchronize server and ui time
         $scope.uiBackendCommons.updateCache($scope.preparedAggregatedData, true, data);
+        $scope.uiBackendCommons.updateCounter($scope.countersObject, data);
+        $scope.counters = [];
+        updateCounters($scope.countersObject);
         $scope.$apply(function () {
           if (!$scope.tweet) {
             $scope.tweethide = false;
@@ -180,6 +187,13 @@ angular.module('whoWillWinOscars.controllers')
           result[key] = sampled;
         });
         return result;
+      }
+
+      function updateCounters(data){
+        angular.forEach(data, function(value, key){
+          $scope.counters.push({value: value, name: key})
+        });
+        $scope.counters = $filter('orderBy')($scope.counters, 'value', true);
       }
 
     })

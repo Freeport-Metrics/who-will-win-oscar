@@ -86,8 +86,15 @@ uiBackendCommonsInit = function () {
     return cache[0];
   }
 
+  function updateCounter(counter, row){
+    row.movies.forEach(function (title) {
+      counter[title] += 1;
+    });
+  }
+
   return {
     updateCache: updateCache,
+    updateCounter: updateCounter,
     toTime: toTime,
     chartMinutesBack: 5
   }
