@@ -13,7 +13,6 @@ module.exports = function (schema, io) {
   var movie_labels = movies_dictionary.movies_labels;
   var movie_colors = movies_dictionary.movies_colors;
   var aggregatedCache = {time: []};
-  var tempCache = {time: []};
   var overallCounter = (function(){
     var c = {};
     movies.forEach(function(title){
@@ -100,7 +99,6 @@ module.exports = function (schema, io) {
 
   function initialize(callback) {
     var aggregated_result = initialResult();
-    var result = initialResult();
     getTweetCountPerSecondFrom(uiBackendCommons.chartMinutesBack).run().then(function (rows) {
       rows.forEach(function (row) {
         var title = row['group'].splice(0, 1)[0];
@@ -108,12 +106,6 @@ module.exports = function (schema, io) {
         var m = row['group'][1];
         var s = row['group'][2];
         var time = uiBackendCommons.toTime(h, m, s);
-        result.forEach(function (counter) {
-          if (counter[time]) {
-            counter[time][title] = row.reduction;
-            return false;
-          }
-        });
         aggregated_result.forEach(function (counter) {
           var key = Object.keys(counter)[0];
           if (key == time || key > time) {
@@ -134,17 +126,6 @@ module.exports = function (schema, io) {
           aggregatedCache[k].push(val);
         });
       });
-      result.forEach(function (value) {
-        var key = Object.keys(value)[0];
-        tempCache['time'].push(key);
-        Object.keys(value[key]).forEach(function (k) {
-          var val = value[key][k];
-          if (!tempCache[k]) {
-            tempCache[k] = [];
-          }
-          tempCache[k].push(val);
-        });
-      });
 
       getAllTweetsBefore(0).run().then(function(rows){
         rows.forEach(function(row){
@@ -159,7 +140,6 @@ module.exports = function (schema, io) {
   }
   function sendCache(socket) {
     socket.emit('initialize_tweet_aggregated', aggregatedCache);
-    socket.emit('initialize_tweet_not_aggregated', tempCache);
   }
   function listenForChanges(callback) {
 
@@ -179,7 +159,6 @@ module.exports = function (schema, io) {
           lang: doc['lang']
         };
         uiBackendCommons.updateCache(aggregatedCache, true, mappedRow);
-        uiBackendCommons.updateCache(tempCache, false, mappedRow);
         uiBackendCommons.updateCounter(overallCounter,mappedRow);
         if (callback) {
           callback(mappedRow);
@@ -217,7 +196,6 @@ module.exports = function (schema, io) {
   }
   function cacheWatch() {
     uiBackendCommons.updateCache(aggregatedCache, true);
-    uiBackendCommons.updateCache(tempCache, false);
   }
 
   // We need to wait for model to initialise, otherwise we got concurrency problem
@@ -236,13 +214,21 @@ module.exports = function (schema, io) {
 
         })
       });
-
-
     });
   })
 
+  return {
+    noOfConnections : function(){
+      return findClientsSocket().length;
+    },
+    aggregatedCache: aggregatedCache,
+    overallCounter: overallCounter
+  }
+
 
 };
+
+
 
 
 

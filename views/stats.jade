@@ -1,0 +1,26 @@
+block content
+  h2 No of open sockets: #{db_service.noOfConnections()}
+  h2 Overall counter:
+  table
+    tbody
+      each value, key in db_service.overallCounter
+        tr
+          td #{key}
+          td #{value}
+  h2 Aggregated cache:
+  table
+    thead
+      tr
+      each values, key in db_service.aggregatedCache
+        th #{key} (#{db_service.aggregatedCache[key].length})
+    tbody
+    - var n = 0
+    while n < db_service.aggregatedCache['time'].length
+      tr
+      each values, key in db_service.aggregatedCache
+        td #{values[n]}
+      -n++
+
+
+
+

@@ -23,11 +23,12 @@ var io = require('./config/socket.io')(server);
 var twitter = require('./config/twitter.js');
 
 /***** SERVICE MODULES *****/
-require('./services/db_service')(schema, io)
+var db_service = require('./services/db_service')(schema, io)
 
 require('./services/twitter_service.js')(twitter, schema);
 
 app.locals.pretty = true;
+app.locals.db_service = db_service;
 
 module.exports = {
   app: app,

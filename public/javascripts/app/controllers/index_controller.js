@@ -86,16 +86,15 @@ angular.module('whoWillWinOscars.controllers')
 
       function reloadAggregatedChart() {
         $scope.uiBackendCommons.updateCache($scope.preparedAggregatedData, true);
-        var sampledData = sampleData($scope.preparedAggregatedData, 1);
         var ticks = [];
-        angular.forEach(sampledData.time, function(time){
+        angular.forEach($scope.preparedAggregatedData.time, function(time){
           if(time.indexOf(':00')!= -1){
             ticks.push(time);
           }
         })
         $scope.aggregatedChart.internal.config.axis_x_tick_values= ticks; // WARNING: using private api
         $scope.aggregatedChart.load({
-          json: sampledData
+          json: $scope.preparedAggregatedData
         });
       }
 
@@ -122,8 +121,7 @@ angular.module('whoWillWinOscars.controllers')
             x: {
               type: 'timeseries',
               tick: {
-                format: dateFormat,
-                values:['15:39:00']
+                format: dateFormat
               }
             },
             y: {

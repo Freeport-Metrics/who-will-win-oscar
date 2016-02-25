@@ -35,6 +35,7 @@ Assuming you use Homebrew:
   
 ###5. Open in browser
 * the app: [http://localhost:3000/](http://localhost:3000/)
+* stats/debug screen: [http://localhost:3000/stats](http://localhost:3000/stats)
 * rethinkdb panel: [http://localhost:8080](http://localhost:8080/)
 
 ## Deploying to Amazon and Engine Yard
@@ -52,6 +53,13 @@ to the version 4 which was the latest available on EY. Node version for EY is ad
  
 
     "engines": {"node": "4.2.1-r1"} 
+    
+## Debugging hints
+    
+You can connect to websokekets from chrome console:
+    
+    
+    socket = io.connect(window.location.href, {multiplex: false}); socket.on("initialize_tweet_aggregated", function (data) {console.log(data)})
     
     
 ## License
