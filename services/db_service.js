@@ -27,26 +27,15 @@ module.exports = function (schema, io) {
     var minutes = [];
     var secondsAgo = 60 * uiBackendCommons.chartMinutesBack;
     var now = new Date();
-    var h = now.getUTCHours();
-    var m = now.getUTCMinutes();
-    var s = now.getUTCSeconds();
 
     for (var i = 0; i < secondsAgo; i++) {
       var counter = {};
-      counter[uiBackendCommons.toTime(h, m, s--)] = movies.reduce(function (obj, val) {
+      counter[now] = movies.reduce(function (obj, val) {
         obj[val] = 0;
         return obj;
       }, {});
-
+      now = new Date(now - 1000);//decrement one second
       minutes.push(counter);
-      if (s < 0) {
-        s = 59;
-        m--;
-        if (m < 0) {
-          m = 59;
-          h = (h + 23) % 24;
-        }
-      }
     }
     return minutes;
   }
@@ -61,16 +50,9 @@ module.exports = function (schema, io) {
         .filter(r.row('movies').contains(function (movie) {
           return r.expr(movies).contains(movie);
         }))
-        .concatMap(function (tweet) {
-          return tweet('movies').distinct().map(function (title) {
-            return {
-              title: title
-            }
-          });
-        })
-        .group(function (movie) {
-          return movie('title');
-        }).count();
+        .group(function (tweet) {
+          return tweet('movies');
+        },{multi: true}).count();
   }
 
   function getTweetCountPerSecondFrom(minutesAgo) {
@@ -92,7 +74,10 @@ module.exports = function (schema, io) {
           });
         })
         .group(function (movie) {
-          return [movie('title'), movie('tweet_created_at').hours(), movie('tweet_created_at').minutes(), movie('tweet_created_at').seconds()];
+          return [
+            movie('title'),
+            movie('tweet_created_at')
+          ];
         }).count();
   }
 
@@ -102,12 +87,10 @@ module.exports = function (schema, io) {
     getTweetCountPerSecondFrom(uiBackendCommons.chartMinutesBack).run().then(function (rows) {
       rows.forEach(function (row) {
         var title = row['group'].splice(0, 1)[0];
-        var h = row['group'][0];
-        var m = row['group'][1];
-        var s = row['group'][2];
-        var time = uiBackendCommons.toTime(h, m, s);
+        var date = row['group'][0];
+        var time = new Date(date);
         aggregated_result.forEach(function (counter) {
-          var key = Object.keys(counter)[0];
+          var key = new Date(Object.keys(counter)[0]);
           if (key == time || key > time) {
             counter[key][title] += row.reduction;
           }
@@ -117,7 +100,7 @@ module.exports = function (schema, io) {
 
       aggregated_result.forEach(function (value) {
         var key = Object.keys(value)[0];
-        aggregatedCache['time'].push(key);
+        aggregatedCache['time'].push(new Date(key));
         Object.keys(value[key]).forEach(function (k) {
           var val = value[key][k];
           if (!aggregatedCache[k]) {
@@ -149,9 +132,6 @@ module.exports = function (schema, io) {
           return
         }
         var mappedRow = {
-          hour: doc['created_at'].getUTCHours(),
-          minute: doc['created_at'].getUTCMinutes(),
-          second: doc['created_at'].getUTCSeconds(),
           date: doc['created_at'],
           text: doc['text'],
           movies: doc['movies'],

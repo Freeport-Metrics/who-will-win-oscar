@@ -84,7 +84,7 @@ angular.module('whoWillWinOscars.controllers')
         $scope.preparedAggregatedData = data;
         $scope.addTimeDimension($scope.preparedAggregatedData);
         $interval($scope.reloadAggregatedChart, 1000);
-      })
+      });
 
       $scope.createChart = createChart;
       $scope.applyClass = applyClass;
@@ -99,7 +99,7 @@ angular.module('whoWillWinOscars.controllers')
         $scope.uiBackendCommons.updateCache($scope.preparedAggregatedData, true);
         var ticks = [];
         angular.forEach($scope.preparedAggregatedData.time, function (time) {
-          if (time.substring(time.length -2) == '00') {
+          if (time.getSeconds() == 0) {
             ticks.push(time);
           }
         })
@@ -114,7 +114,6 @@ angular.module('whoWillWinOscars.controllers')
           bindto: elementId,
           data: {
             x: 'time',
-            xFormat: dateFormat,
             json: data,
             type: 'spline',
             colors: colors
@@ -165,28 +164,15 @@ angular.module('whoWillWinOscars.controllers')
       }
 
       function prepareChart(chart, data, chartData) {
-        angular.forEach(data, function (value, index) {
-          var key = Object.keys(value)[0]
-          chartData['time'].push(key)
-          angular.forEach(value[key], function (val, key) {
-            chartData[key].push(val);
-          })
-        })
         chart.load({
           json: chartData
         });
       }
 
       function addTimeDimension(data) {
-        var timeDimension = [];
-        var date = new Date();
-        var lastSecond = new Date(date.getUTCFullYear(), date.getUTCMonth(),
-            date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
-        for (var i = 0; i < $scope.uiBackendCommons.chartMinutesBack * 60; i++) {
-          var second = new Date(lastSecond - i * 1000);
-          timeDimension.push(d3.time.format("%H:%M:%S")(second));
+        for(var i = 0 ; i < data.time.length;i++){
+          data.time[i] = new Date(data.time[i]);
         }
-        data['time'] = timeDimension;
       }
 
 
