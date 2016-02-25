@@ -33,7 +33,6 @@ angular.module('whoWillWinOscars.controllers')
             initialData[key] = [];
             index = index + 1;
           })
-          console.log(data.counters);
           $scope.countersObject = data.counters;
           updateCounters(data.counters);
           initialData['time'] = [];
