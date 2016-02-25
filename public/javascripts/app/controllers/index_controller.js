@@ -99,7 +99,7 @@ angular.module('whoWillWinOscars.controllers')
         $scope.uiBackendCommons.updateCache($scope.preparedAggregatedData, true);
         var ticks = [];
         angular.forEach($scope.preparedAggregatedData.time, function (time) {
-          if (time.indexOf(':00') != -1) {
+          if (time.substring(time.length -2) == '00') {
             ticks.push(time);
           }
         })
