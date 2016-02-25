@@ -170,9 +170,8 @@ angular.module('whoWillWinOscars.controllers')
       }
 
       function addTimeDimension(data) {
-        for(var i = 0 ; i < data.time.length;i++){
-          data.time[i] = new Date(data.time[i]);
-        }
+        var keys = $scope.uiBackendCommons.generateKeys($scope.uiBackendCommons.chartMinutesBack*60,new Date());
+        data.time = keys;
       }
 
 

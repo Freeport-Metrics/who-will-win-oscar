@@ -67,6 +67,7 @@ uiBackendCommonsInit = function () {
   return {
     updateCache: updateCache,
     updateCounter: updateCounter,
+    generateKeys: generateKeys,
     chartMinutesBack: 5
   }
 
