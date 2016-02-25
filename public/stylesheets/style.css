@@ -115,10 +115,11 @@ a {
   display: none;
 }
 
-.legend {
-  font-weight: bold;
-}
 
+.c3-legend-item {
+  fill: whitesmoke;
+  font: "Josefin Sans", "Lucida Grande", Arial, sans-serif;
+}
 /** EPOCH CHART STYLES **/
 
 .x.axis.bottom {

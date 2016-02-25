@@ -125,9 +125,6 @@ angular.module('whoWillWinOscars.controllers')
           point: {
             show: false
           },
-          legend: {
-            show: false
-          },
           axis: {
             x: {
               type: 'timeseries',
