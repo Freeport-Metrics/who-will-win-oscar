@@ -16,7 +16,9 @@ angular.module('whoWillWinOscars.controllers')
       $scope.uiBackendCommons = uiBackendCommonsInit();
       $scope.counters = [];
       $scope.countersObject = {};
-      $scope.movieLabels = {}
+      $scope.movieLabels = {};
+      $scope.countersObjectHighlight = {};
+      $scope.counterHighlightTimout = {};
 
       $scope.socket.on("connect", function (socket) {
         console.log("client connected to server");
@@ -53,6 +55,14 @@ angular.module('whoWillWinOscars.controllers')
         $scope.uiBackendCommons.updateCounter($scope.countersObject, data);
         $scope.counters = [];
         updateCounters($scope.countersObject);
+        var movie = data.movies[0]; // naive assumption, one movie per tweet, should be true most of the time
+        $scope.countersObjectHighlight[movie] = true;
+        if($scope.counterHighlightTimout[movie]){
+          $timeout.cancel($scope.counterHighlightTimout[movie]);
+        }
+        $scope.counterHighlightTimout[movie] = $timeout(function () {
+          $scope.countersObjectHighlight[movie] = false;
+        },2000);
         $scope.$apply(function () {
           if (!$scope.tweet) {
             $scope.tweethide = false;
@@ -82,16 +92,18 @@ angular.module('whoWillWinOscars.controllers')
       $scope.prepareChart = prepareChart;
       $scope.addTimeDimension = addTimeDimension;
       $scope.reloadAggregatedChart = reloadAggregatedChart;
+      $scope.leadingDigits = leadingDigits;
+      $scope.lastDigit = lastDigit;
 
       function reloadAggregatedChart() {
         $scope.uiBackendCommons.updateCache($scope.preparedAggregatedData, true);
         var ticks = [];
-        angular.forEach($scope.preparedAggregatedData.time, function(time){
-          if(time.indexOf(':00')!= -1){
+        angular.forEach($scope.preparedAggregatedData.time, function (time) {
+          if (time.indexOf(':00') != -1) {
             ticks.push(time);
           }
         })
-        $scope.aggregatedChart.internal.config.axis_x_tick_values= ticks; // WARNING: using private api
+        $scope.aggregatedChart.internal.config.axis_x_tick_values = ticks; // WARNING: using private api
         $scope.aggregatedChart.load({
           json: $scope.preparedAggregatedData
         });
@@ -145,6 +157,16 @@ angular.module('whoWillWinOscars.controllers')
         return params.split(' ').join('-').toLowerCase();
       }
 
+      function leadingDigits(digits) {
+        var digitsString = digits.toString();
+        return digitsString.substring(0, digitsString.length - 1);
+      }
+
+      function lastDigit(digits) {
+        var digitsString = digits.toString();
+        return digitsString.substring(digitsString.length - 1);
+      }
+
       function prepareChart(chart, data, chartData) {
         angular.forEach(data, function (value, index) {
           var key = Object.keys(value)[0]
@@ -186,8 +208,8 @@ angular.module('whoWillWinOscars.controllers')
         return result;
       }
 
-      function updateCounters(data){
-        angular.forEach(data, function(value, key){
+      function updateCounters(data) {
+        angular.forEach(data, function (value, key) {
           $scope.counters.push({value: value, name: key})
         });
         $scope.counters = $filter('orderBy')($scope.counters, 'value', true);

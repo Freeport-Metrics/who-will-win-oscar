@@ -48,7 +48,9 @@ block content
                   span(class="laurel-text-tweet")
                     i(class='fa fa-twitter {{applyClass(counter.name)}}')
                   span(class="laurel-text" ng-bind="movieLabels[counter.name]")
-                  span(class="laurel-text-counter" ng-bind="counter.value")
+                  span(class="laurel-text-counter" ng-class="{'highlight-counter': countersObjectHighlight[counter.name]}")
+                    span(ng-bind="leadingDigits(counter.value)")
+                    span(class="last-digit" ng-bind="lastDigit(counter.value)")
                   i( class="laurel icon-laurel-right")
 
       div(class='row section')
@@ -79,7 +81,7 @@ block content
                     li Creating a free market prediction model where people buy movie stock
                     li Mapping how connected the members of the Academy are with the nominees
                     li Measuring the buzz on Twitter in real time
-                p The Twitter buzz meter turned out to be the most interesting from the technological point of view: a lot of data! We use #[a(href="http://www.nodejs.org") Node.js] server to retrieve tweets that contain previously defined # and @ from the #[a(href="https://dev.twitter.com/streaming/overview") Twitter Stream API]. For the database we use #[a(href="http://www.rethinkdb.com") RethinkDB] to store all the data. Is our solution scalable? Well, yes. We update the counters on the fly to avoid our servers from exploding :)
+                p The Twitter buzz meter turned out to be the most interesting from the technological point of view: a lot of data! We use #[a(href="http://www.nodejs.org") Node.js] server to retrieve tweets that contain previously defined # and @ from the #[a(href="https://dev.twitter.com/streaming/overview") Twitter Stream API]. For the database we use #[a(href="http://www.rethinkdb.com") RethinkDB] to store all the data. We also update the counters on the fly to avoid our servers from exploding :)
                 p(class="m-b-lg").
                     On the front-end we used #[a(href="http://www.socket.io") Socket.IO] to get data streamed from the server instead of making queries each time. For drawing charts we used #[a(href="http://c3js.org/") C3] library. That's the whole magic!
 

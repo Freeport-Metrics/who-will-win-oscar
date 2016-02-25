@@ -5,7 +5,7 @@ body {
   line-height: 1.5;
 }
 
-h1{
+h1 {
   font-size: 700%;
   margin-top: 30px;
   margin-bottom: 0px;
@@ -22,22 +22,23 @@ a {
   margin-right: 5px;
 }
 
-
 .social-button div, .social-button span {
   vertical-align: text-bottom !important;
 }
 
-
-.mask-wrapper{
+.mask-wrapper {
   position: relative;
 }
+
 #aggregated_chart {
   height: 500px;
 }
+
 #not_aggregated_chart {
   height: 500px;
 }
-.overlay-mask{
+
+.overlay-mask {
   position: absolute;
   left: 0;
   bottom: 25px;
@@ -46,25 +47,25 @@ a {
   z-index: 999;
 
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.65+50,0+100 */
-  background: -moz-linear-gradient(left, rgba(36, 36, 36,1) 5%, rgba(36, 36, 36, 0.7) 50%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(left, rgba(36, 36, 36,1) 5%,rgba(36, 36, 36,0.7) 50%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(to right, rgba(36, 36, 36,1) 5%, rgba(36, 36, 36 ,0.7) 50%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=1 ); /* IE6-9 */
+  background: -moz-linear-gradient(left, rgba(36, 36, 36, 1) 5%, rgba(36, 36, 36, 0.7) 50%, rgba(0, 0, 0, 0) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(left, rgba(36, 36, 36, 1) 5%, rgba(36, 36, 36, 0.7) 50%, rgba(0, 0, 0, 0) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to right, rgba(36, 36, 36, 1) 5%, rgba(36, 36, 36, 0.7) 50%, rgba(0, 0, 0, 0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#a6000000', endColorstr='#00000000', GradientType=1); /* IE6-9 */
 }
 
 .chart-caption {
-  position: absolute ;
+  position: absolute;
   z-index: 1000;
 }
 
 @media (min-width: 768px) {
-  .chart-caption{
+  .chart-caption {
     width: 33%;
   }
 
 }
 
-.tweet-mask{
+.tweet-mask {
   position: absolute;
   left: 0;
   right: 0;
@@ -74,33 +75,35 @@ a {
 }
 
 /*.tweet{*/
-  /*width:300px;*/
-  /*height:50px;*/
-  /*background-color: rgba(51,51,51, 1);*/
-  /*border-radius: 4px;*/
-  /*transition: visibility 0s, opacity 0.5s linear;*/
+/*width:300px;*/
+/*height:50px;*/
+/*background-color: rgba(51,51,51, 1);*/
+/*border-radius: 4px;*/
+/*transition: visibility 0s, opacity 0.5s linear;*/
 /*}*/
 
 /** CHART STYLES **/
 
-.c3-line{
+.c3-line {
   stroke-width: 5px !important;
 }
 
 .c3 .c3-axis-x path, .c3 .c3-axis-x line {
-  stroke: rgb(71,71,71);;
-  stroke-width: 2px;
-}
-.c3 .c3-axis-y path, .c3 .c3-axis-y line {
-  stroke: rgb(71,71,71);
-  stroke-width: 2px;
-}
-.c3 .c3-axis-y2 path, .c3 .c3-axis-y2 line {
-  stroke: rgb(71,71,71);;
+  stroke: rgb(71, 71, 71);;
   stroke-width: 2px;
 }
 
-.c3 .tick tspan{
+.c3 .c3-axis-y path, .c3 .c3-axis-y line {
+  stroke: rgb(71, 71, 71);
+  stroke-width: 2px;
+}
+
+.c3 .c3-axis-y2 path, .c3 .c3-axis-y2 line {
+  stroke: rgb(71, 71, 71);;
+  stroke-width: 2px;
+}
+
+.c3 .tick tspan {
   fill: white;
 }
 
@@ -112,101 +115,104 @@ a {
   display: none;
 }
 
-
-.legend{
+.legend {
   font-weight: bold;
 }
 
 /** EPOCH CHART STYLES **/
 
-.x.axis.bottom{
+.x.axis.bottom {
   fill: whitesmoke;
 }
-.y.axis.right{
+
+.y.axis.right {
   fill: whitesmoke;
 }
-.y.axis.left{
+
+.y.axis.left {
   fill: whitesmoke;
 }
-.epoch .axis path, .epoch .axis line{
-  stroke: rgb(71,71,71) !important;
+
+.epoch .axis path, .epoch .axis line {
+  stroke: rgb(71, 71, 71) !important;
 }
+
 /** Specific styles **/
 
-.revenant{
+.revenant {
   color: #69788C !important;
 }
 
-.martian{
+.martian {
   color: #AA5A28 !important;
 }
 
-.bridge-of-spies{
+.bridge-of-spies {
   color: #F14752 !important;
 }
 
-.spotlight{
+.spotlight {
   color: #DCDCDC !important;
 }
 
-.mad-max{
+.mad-max {
   color: #E1BE32 !important;
 }
 
-.room{
+.room {
   color: #648CAA !important;
 }
 
-.brooklyn{
+.brooklyn {
   color: #87A096 !important;
 }
 
-.big-short{
+.big-short {
   color: #82643C !important;
 }
 
-.block{
+.block {
   display: block;
 }
 
-.highlight{
-  background-color: rgb(71,71,71);
+.highlight {
+  background-color: rgb(71, 71, 71);
   border-radius: 4px;
   padding: 5px;
 }
 
-.highlight-text{
+.highlight-text {
   color: rgb(50, 50, 50);
   margin-left: 20px;
 }
 
-.text-color{
-  color: rgb(171,171,171)
+.text-color {
+  color: rgb(171, 171, 171)
 }
 
-.color-white{
+.color-white {
   color: whitesmoke;
 }
 
-.no-margin{
+.no-margin {
   margin: 0;
 }
 
-.text-center{
+.text-center {
   text-align: center;
 }
 
-.tweet-container{
+.tweet-container {
   min-height: 250px;
   font-size: 15px;
 }
 
-.text-container{
+.text-container {
   margin-bottom: 10px;
   display: inline-block;
 }
 
-.tweet{
+.tweet {
   padding: 10px;
   display: inline-block;
   border-radius: 4px;
@@ -214,40 +220,39 @@ a {
   font-size: 150%;
 }
 
-.tweet.Revenant{
+.tweet.Revenant {
   border-color: #69788C;
 }
 
-.tweet.Martian{
+.tweet.Martian {
   border-color: #AA5A28;
 }
 
-.tweet.Bridge-Of-Spies{
+.tweet.Bridge-Of-Spies {
   border-color: #821E1E;
 }
 
-.tweet.Spotlight{
+.tweet.Spotlight {
   border-color: #DCDCDC;
 }
 
-.tweet.Mad-Max{
+.tweet.Mad-Max {
   border-color: #E1BE32;
 }
 
-.tweet.Room{
+.tweet.Room {
   border-color: #648CAA;
 }
 
-.tweet.Brooklyn{
+.tweet.Brooklyn {
   border-color: #87A096;
 }
 
-.tweet.Big-Short{
+.tweet.Big-Short {
   border-color: #82643C;
 }
 
-
-.tweet.tweet-hide{
+.tweet.tweet-hide {
   opacity: 0;
   -webkit-transition: all .3s ease .15s;
   -moz-transition: all .3s ease .15s;
@@ -256,7 +261,7 @@ a {
   transition: all .3s ease .15s;
 }
 
-.tweet.tweet-show{
+.tweet.tweet-show {
   opacity: 1;
   -webkit-transition: all .3s ease .15s;
   -moz-transition: all .3s ease .15s;
@@ -265,15 +270,16 @@ a {
   transition: all .3s ease .15s;
 }
 
-.gold{
-  background: #f3e2c7 ; /* Old browsers */
-  background: -moz-linear-gradient(-45deg, #f3e2c7  0%, #c19e67  50%, #b68d4c  51%, #e9d4b3  100%); /* FF3.6-15 */
-  background: -webkit-linear-gradient(-45deg, #f3e2c7  0%,#c19e67  50%,#b68d4c  51%,#e9d4b3  100%); /* Chrome10-25,Safari5.1-6 */
-  background: linear-gradient(135deg, #f3e2c7  0%,#c19e67  50%,#b68d4c  51%,#e9d4b3  100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+.gold {
+  background: #f3e2c7; /* Old browsers */
+  background: -moz-linear-gradient(-45deg, #f3e2c7 0%, #c19e67 50%, #b68d4c 51%, #e9d4b3 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-45deg, #f3e2c7 0%, #c19e67 50%, #b68d4c 51%, #e9d4b3 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(135deg, #f3e2c7 0%, #c19e67 50%, #b68d4c 51%, #e9d4b3 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f3e2c7 ', endColorstr='#e9d4b3 ',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f3e2c7 ', endColorstr='#e9d4b3 ', GradientType=1); /* IE6-9 fallback on horizontal gradient */
 }
+
 @-moz-document url-prefix() {
   .gold {
     background: transparent !important;
@@ -281,7 +287,7 @@ a {
   }
 }
 
-.laurel-wrapper{
+.laurel-wrapper {
   width: 200px;
   height: 300px;
   display: inline-block;
@@ -289,7 +295,7 @@ a {
   margin-left: -40px;
 }
 
-.laurel-text{
+.laurel-text {
   position: absolute;
   margin-left: auto;
   margin-right: auto;
@@ -302,7 +308,7 @@ a {
   word-wrap: break-word;
 }
 
-.laurel-text-counter{
+.laurel-text-counter {
   position: absolute;
   margin-left: auto;
   margin-right: auto;
@@ -319,7 +325,7 @@ a {
 
   }
 
-  .laurel-wrapper{
+  .laurel-wrapper {
     height: 200px;
   }
 
@@ -329,7 +335,7 @@ a {
 
 }
 
-.laurel-text-tweet{
+.laurel-text-tweet {
   position: absolute;
   margin-left: auto;
   margin-right: auto;
@@ -339,129 +345,129 @@ a {
   font-size: 200%
 }
 
-.laurel-text-tweet .fa-twitter{
+.laurel-text-tweet .fa-twitter {
   font-size: 80%
 }
 
 /* MARGINS */
 
-.m-t-xl{
+.m-t-xl {
   margin-top: 35px;
 }
 
-.m-t-lg{
+.m-t-lg {
   margin-top: 30px;
 }
 
-.m-t-md{
+.m-t-md {
   margin-top: 25px;
 }
 
-.m-t-sm{
+.m-t-sm {
   margin-top: 20px;
 }
 
-.m-t-xs{
+.m-t-xs {
   margin-top: 15px;
 }
 
-.m-r-xl{
+.m-r-xl {
   margin-right: 35px;
 }
 
-.m-r-lg{
+.m-r-lg {
   margin-right: 30px;
 }
 
-.m-r-md{
+.m-r-md {
   margin-right: 25px;
 }
 
-.m-r-sm{
+.m-r-sm {
   margin-right: 20px;
 }
 
-.m-r-xs{
+.m-r-xs {
   margin-right: 15px;
 }
 
-.m-b-xl{
+.m-b-xl {
   margin-bottom: 35px;
 }
 
-.m-b-lg{
+.m-b-lg {
   margin-bottom: 30px;
 }
 
-.m-b-md{
+.m-b-md {
   margin-bottom: 25px;
 }
 
-.m-b-sm{
+.m-b-sm {
   margin-bottom: 20px;
 }
 
-.m-b-xs{
+.m-b-xs {
   margin-bottom: 15px;
 }
 
-.m-l-xl{
+.m-l-xl {
   margin-left: 35px;
 }
 
-.m-l-lg{
+.m-l-lg {
   margin-left: 30px;
 }
 
-.m-l-md{
+.m-l-md {
   margin-left: 25px;
 }
 
-.m-l-sm{
+.m-l-sm {
   margin-left: 20px;
 }
 
-.m-l-xs{
+.m-l-xs {
   margin-left: 15px;
 }
 
 /* Font colors */
 
-.fa-facebook{
+.fa-facebook {
   color: #3B5998;
 }
 
-.fa-twitter{
+.fa-twitter {
   color: #1DA1F2;
 }
 
-.fa-github{
+.fa-github {
   color: #333;
 }
 
-.fa-google{
+.fa-google {
   color: #DC4B3F;
 }
 
 /* Section Styles */
 
-.section-description{
+.section-description {
   font-size: 100%;
 }
 
-.section{
+.section {
   margin-top: 30px;
 }
 
-.s-m-t-lg{
+.s-m-t-lg {
   margin-top: 100px;
 }
 
-.s-m-t-md{
+.s-m-t-md {
   margin-top: 75px;
 }
 
-.s-m-t-sm{
+.s-m-t-sm {
   margin-top: 50px;
 }
 
@@ -473,7 +479,11 @@ a {
   color: #2ca02c;
 }
 
-.blue{
+.blue {
   color: #1DA1F2;
 }
 
+.highlight-counter .last-digit {
+  color: #fff;
+  text-shadow: 0 0 2px #fff000;
+}
