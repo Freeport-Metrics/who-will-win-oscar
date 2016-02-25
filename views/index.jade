@@ -47,7 +47,7 @@ block content
                   i( class="laurel icon-laurel-left")
                   span(class="laurel-text-tweet")
                     i(class='fa fa-twitter {{applyClass(counter.name)}}')
-                  span(class="laurel-text" ng-bind="movieLabels[counter.name]")
+                  span(class="laurel-text" ng-bind="($index +1) +'. ' + movieLabels[counter.name]")
                   span(class="laurel-text-counter" ng-class="{'highlight-counter': countersObjectHighlight[counter.name]}")
                     span(ng-bind="leadingDigits(counter.value)")
                     span(class="last-digit" ng-bind="lastDigit(counter.value)")
