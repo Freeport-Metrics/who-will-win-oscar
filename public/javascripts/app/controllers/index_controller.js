@@ -19,6 +19,7 @@ angular.module('whoWillWinOscars.controllers')
       $scope.movieLabels = {};
       $scope.countersObjectHighlight = {};
       $scope.counterHighlightTimout = {};
+      $scope.aggregatedChartInterval = $interval;
 
       $scope.socket.on("connect", function (socket) {
         console.log("client connected to server");
@@ -44,6 +45,21 @@ angular.module('whoWillWinOscars.controllers')
               colors, '%H:%M:%S');
         })
       })
+
+      $( window ).on("focusout", function(){
+        console.log("Killing chart")
+        $scope.socket.disconnect();
+        $interval.cancel($scope.aggregatedChartInterval);
+        if(document.hidden){
+          $("#aggregated_chart").remove();
+        }
+      });
+
+      $(window).on("focus", function(){
+        console.log("reloading...")
+          location.reload();
+
+      });
 
       $scope.socket.on("disconnect", function (socket) {
         console.log("client disconnected from server");
@@ -83,7 +99,7 @@ angular.module('whoWillWinOscars.controllers')
       $scope.socket.on('initialize_tweet_aggregated', function (data) {
         $scope.preparedAggregatedData = data;
         $scope.addTimeDimension($scope.preparedAggregatedData);
-        $interval($scope.reloadAggregatedChart, 1000);
+        $scope.aggregatedChartInterval = $interval($scope.reloadAggregatedChart, 1000);
       });
 
       $scope.createChart = createChart;
