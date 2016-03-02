@@ -6,7 +6,8 @@ var cssnano = require('gulp-cssnano');
 var jade = require('gulp-jade');
 var static_resources = require('./config/static_resources')(__dirname);
 var useref = require('gulp-useref');
-var gulpif = require('gulp-if')
+var gulpif = require('gulp-if');
+var rev = require('gulp-rev');
 
 
 gulp.task('jade', function () {
@@ -18,6 +19,7 @@ gulp.task('jade', function () {
       .pipe(useref({searchPath: '.'}))
       .pipe(gulpif('*.js', uglify({mangle: false})))
       .pipe(gulpif('*.css', cssnano()))
+      .pipe( rev() )
       .pipe(gulp.dest('./public/'))
 });
 
