@@ -19,6 +19,7 @@ angular.module('whoWillWinOscars.controllers')
       $scope.movieLabels = {};
       $scope.countersObjectHighlight = {};
       $scope.counterHighlightTimout = {};
+      $scope.intervalTimer = 0;
 
       $scope.socket.on("connect", function (socket) {
         console.log("client connected to server");
@@ -97,13 +98,27 @@ angular.module('whoWillWinOscars.controllers')
 
       function reloadAggregatedChart() {
         $scope.uiBackendCommons.updateCache($scope.preparedAggregatedData, true);
-        var ticks = [];
-        angular.forEach($scope.preparedAggregatedData.time, function (time) {
-          if (time.getSeconds() == 0) {
-            ticks.push(time);
+
+        $scope.intervalTimer = $scope.intervalTimer + 1;
+
+        if ($scope.intervalTimer > 59){
+          $scope.intervalTimer = 0;
+          var ticks = [];
+          for (i = 0 ; i < 5; i++){
+            var date = new Date();
+            var minutes = date.getMinutes() - i;
+            date.setMinutes(minutes);
+            date.setSeconds("00");
+            ticks.push(date);
+
           }
-        })
-        $scope.aggregatedChart.internal.config.axis_x_tick_values = ticks; // WARNING: using private api
+          $scope.aggregatedChart.internal.config.axis_x_tick_values = ticks;
+
+
+        }
+
+
+        // WARNING: using private api
         $scope.aggregatedChart.load({
           json: $scope.preparedAggregatedData
         });
@@ -115,7 +130,7 @@ angular.module('whoWillWinOscars.controllers')
           data: {
             x: 'time',
             json: data,
-            type: 'spline',
+            type: 'line',
             colors: colors
           },
           tooltip: {
@@ -124,11 +139,18 @@ angular.module('whoWillWinOscars.controllers')
           point: {
             show: false
           },
+          padding:{
+            left: 0,
+            bottom: 20
+          },
           axis: {
             x: {
               type: 'timeseries',
               tick: {
-                format: dateFormat
+                format: dateFormat,
+                culling:{
+                  max: 5
+                }
               }
             },
             y: {
