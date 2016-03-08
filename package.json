@@ -37,7 +37,8 @@
     "gulp-cssnano": "latest",
     "gulp-jade": "latest",
     "gulp-useref": "latest",
-    "gulp-if": "latest"
+    "gulp-if": "latest",
+    "gulp-rev": "latest"
 
   },
   "engines": {"node": "4.2.1-r1"}
