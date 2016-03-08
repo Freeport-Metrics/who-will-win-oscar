@@ -21,6 +21,7 @@ angular.module('whoWillWinOscars.controllers')
       $scope.counterHighlightTimout = {};
       $scope.intervalTimer = 0;
       $scope.aggregatedChartInterval = $interval;
+      $scope.reloadFlag = 0;
 
       $scope.socket.on("connect", function (socket) {
         console.log("client connected to server");
@@ -47,7 +48,7 @@ angular.module('whoWillWinOscars.controllers')
         })
       })
 
-      $( window ).on("focusout", function(){
+      $( window ).blur( function(){
         console.log("Killing chart")
         $scope.socket.disconnect();
         $interval.cancel($scope.aggregatedChartInterval);
@@ -56,10 +57,15 @@ angular.module('whoWillWinOscars.controllers')
         }
       });
 
-      $(window).on("focus", function(){
-        console.log("reloading...")
+      $(window).focus( function(){
+        console.log("reloading...");
+        if ( navigator.userAgent.toLowerCase().indexOf('chrome') > -1){
           location.reload();
-
+        }
+        if($scope.reloadFlag > 0){
+          location.reload();
+        }
+        $scope.reloadFlag++;
       });
 
       $scope.socket.on("disconnect", function (socket) {
