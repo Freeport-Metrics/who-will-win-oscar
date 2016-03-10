@@ -8,8 +8,7 @@ var movies = movies_dict.movies;
 
 module.exports = function (twitter, schema) {
   var keywords = Object.keys(movies_hashtags);
-  twitter.stream('statuses/filter', {track: keywords.join(',')}, function (stream) {
-    stream.on('data', function (tweet) {
+    twitter.on('tweet', function (tweet) {
       tweet.movies = [];
       keywords.forEach(function (value, index) {
 
@@ -31,8 +30,13 @@ module.exports = function (twitter, schema) {
         // Unexpected error
       });
     });
-    stream.on('error', function (error) {
-      console.log(error)
-    });
+  twitter.on('error', function (error) {
+    console.log(error)
   });
+
+  for (var key in movies_hashtags){
+    if(movies_hashtags.hasOwnProperty(key)){
+      twitter.track(key);
+    }
+  }
 };
