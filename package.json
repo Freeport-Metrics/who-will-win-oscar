@@ -30,16 +30,18 @@
     "urlgrey": "^0.4.1",
     "sentiment": "^1.0.6"
   },
-  "devDependencies":{
+  "devDependencies": {
     "gulp": "latest",
     "gulp-concat": "latest",
-    "gulp-uglify": "latest",
     "gulp-cssnano": "latest",
-    "gulp-jade": "latest",
-    "gulp-useref": "latest",
     "gulp-if": "latest",
-    "gulp-rev": "latest"
-
+    "gulp-jade": "latest",
+    "gulp-rev": "latest",
+    "gulp-rev-mtime": "0.0.4",
+    "gulp-uglify": "latest",
+    "gulp-useref": "latest"
   },
-  "engines": {"node": "4.2.1-r1"}
+  "engines": {
+    "node": "4.2.1-r1"
+  }
 }

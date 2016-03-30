@@ -19,11 +19,22 @@ gulp.task('jade', function () {
       .pipe(useref({searchPath: '.'}))
       .pipe(gulpif('*.js', uglify({mangle: false})))
       .pipe(gulpif('*.css', cssnano()))
-      .pipe( rev() )
+      .pipe(rev({
+          'cwd': 'public/'
+      }))
       .pipe(gulp.dest('./public/'))
 });
 
+gulp.task('assets', function(){
+    return gulp.src(['./public/stylesheets', './public/javascripts'])
+        .pipe(gulp.dest('./public/'))
+        .pipe(rev())
+        .pipe(gulp.dest('./public/'))
+        .pipe(rev.manifest())
+        .pipe(gulp.dest('./public/'));
+});
 
-gulp.task('default', ['jade'], function () {
+
+gulp.task('default', ['jade', 'assets'], function () {
 });
 
